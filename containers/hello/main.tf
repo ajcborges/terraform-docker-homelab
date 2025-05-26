@@ -29,4 +29,3 @@ resource "docker_container" "hello" {
   }
 }
 
-#dummy commit
