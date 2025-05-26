@@ -30,6 +30,7 @@ jobs:
           tags: tag:ci
       - name: command
         run: |
+          pwd
           terraform --version
           terraform fmt --recursive
           terraform init
