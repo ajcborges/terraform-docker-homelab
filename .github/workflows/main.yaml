@@ -8,49 +8,53 @@ on:
       - main
 
 jobs:
-  ci:
+  dispatch-ci:
+    name: Run Terraform Plan for Updated Container
     runs-on: ubuntu-latest
-    
-    steps:
-      # - name: Sanity check
-      #   if: github.ref != 'refs/heads/main'
-      #   run: echo 'Not running against 'main' branch, exiting.' && exit 1
 
-      - name: Checkout code
+    steps:
+      - name: 📥 Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Detect app_name from changed path
-        id: detect
+      - name: 🔍 Detect Updated App Name
+        id: detect-app
         run: |
-          echo "Looking for changed folder under containers/..."
+          echo "Detecting application name from changed files under containers/..."
           app_name=$(git diff --name-only ${{ github.sha }}~1 ${{ github.sha }} | grep '^containers/' | cut -d/ -f2 | sort -u | head -n1)
-          echo "app_name=$app_name"
+          if [[ -z "$app_name" ]]; then
+            echo "No application detected. Exiting."
+            exit 1
+          fi
+          echo "Detected application: $app_name"
           echo "APP_NAME=$app_name" >> $GITHUB_ENV
 
-      - name: Connect Tailscale
+      - name: 🔐 Connect to Tailscale
         uses: tailscale/github-action@v3
         with:
           oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
           oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
           tags: tag:ci
-          
-      - name: Show Tailscale status
+
+      - name: 📡 Show Tailscale Status
         run: tailscale status
-        
-      - name: Setup terraform
+
+      - name: 🛠️ Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: "1.3.3"
-      
-      - name: Terraform Init
+
+      # Optional: Enable Terraform caching to speed up subsequent runs
+      # - name: 📦 Cache Terraform Plugin Directory
+      #   uses: actions/cache@v3
+      #   with:
+      #     path: ~/.terraform.d/plugin-cache
+      #     key: terraform-plugins-${{ runner.os }}-${{ hashFiles('**/*.tf') }}
+
+      - name: ⚙️ Terraform Init & Validate
         run: |
           terraform -chdir=containers/${{ env.APP_NAME }} init
           terraform -chdir=containers/${{ env.APP_NAME }} validate
 
-      - name: Terraform Plan
+      - name: 📄 Terraform Plan
         run: |
           terraform -chdir=containers/${{ env.APP_NAME }} plan -no-color -out .planfile
-
-          
-
- 
