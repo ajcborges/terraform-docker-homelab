@@ -19,15 +19,13 @@ jobs:
       - name: hello world
         run: echo "hello"
       - name: Connect Tailscale
-        uses: tailscale/github-action@v2
+        uses: tailscale/github-action@v3
         with:
           oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
           oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
           tags: tag:ci
-      - name: Ping Mishim
+      - name: Ping Nas
         run: |
-          ping -c 16 100.86.187.17
-      - uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: "1.7.5"
+          ping -c 16 100.89.146.113
+
  
