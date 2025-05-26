@@ -2,46 +2,58 @@ name: Dispatch
 
 on:
   push:
-    branches: ["main"]
-  workflow_dispatch:
-
-permissions: write-all
+    paths:
+      - 'containers/**'
+    branches:
+      - main
 
 jobs:
-  # infra:
-  #   name: Deploy Terraform
-  #   uses: ./.github/workflows/infra.yaml
-  #   secrets: inherit
-  main:
-    name: main
+  ci:
     runs-on: ubuntu-latest
+    
     steps:
-      - name: Sanity check
-        if: github.ref != 'refs/heads/main'
-        run: echo 'Not running against 'main' branch, exiting.' && exit 1
+      # - name: Sanity check
+      #   if: github.ref != 'refs/heads/main'
+      #   run: echo 'Not running against 'main' branch, exiting.' && exit 1
 
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Detect app_name from changed path
+        id: detect
+        run: |
+          echo "Looking for changed folder under containers/..."
+          app_name=$(git diff --name-only ${{ github.sha }}~1 ${{ github.sha }} | grep '^containers/' | cut -d/ -f2 | sort -u | head -n1)
+          echo "app_name=$app_name"
+          echo "APP_NAME=$app_name" >> $GITHUB_ENV
+
+      - name: Set up Tailscale
+        uses: tailscale/github-action@v2
+        with:
+          authkey: ${{ secrets.TAILSCALE_AUTH_KEY }}
+          
+      - name: Show Tailscale status
+        run: tailscale status
         
       - name: Setup terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: "1.3.3"
       
-      - name: Connect Tailscale
-        uses: tailscale/github-action@v3
-        with:
-          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
-          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
-          tags: tag:ci
+      # - name: Connect Tailscale
+      #   uses: tailscale/github-action@v3
+      #   with:
+      #     oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+      #     oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+      #     tags: tag:ci
       
-      - name: command
-        run: |
-          pwd
-          cd containers
-          terraform fmt --recursive
-          terraform init
-          terraform validate
+      - name: Terraform Init
+        run: terraform init
+        working-directory: containers/${{ env.APP_NAME }}
+
+      - name: Terraform Plan
+        run: terraform plan
+        working-directory: containers/${{ env.APP_NAME }}
 
           
 
