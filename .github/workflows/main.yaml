@@ -30,6 +30,13 @@ jobs:
           echo "Detected application: $app_name"
           echo "APP_NAME=$app_name" >> $GITHUB_ENV
 
+      - name: 🔐 Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -p 22 whitewalker >> ~/.ssh/known_hosts
+
       - name: 🔐 Connect to Tailscale
         uses: tailscale/github-action@v3
         with:
