@@ -31,6 +31,7 @@ jobs:
       - name: command
         run: |
           pwd
+          cd containers
           terraform --version
           terraform fmt --recursive
           terraform init
