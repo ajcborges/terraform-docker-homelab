@@ -39,6 +39,9 @@ jobs:
         run: |
           pwd
           cd containers
+          terraform fmt --recursive
+          terraform init
+          terraform validate
 
           
 
