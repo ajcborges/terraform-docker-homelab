@@ -27,10 +27,12 @@ jobs:
           echo "app_name=$app_name"
           echo "APP_NAME=$app_name" >> $GITHUB_ENV
 
-      - name: Set up Tailscale
-        uses: tailscale/github-action@v2
+      - name: Connect Tailscale
+        uses: tailscale/github-action@v3
         with:
-          authkey: ${{ secrets.TAILSCALE_AUTH_KEY }}
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
           
       - name: Show Tailscale status
         run: tailscale status
@@ -39,13 +41,6 @@ jobs:
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: "1.3.3"
-      
-      # - name: Connect Tailscale
-      #   uses: tailscale/github-action@v3
-      #   with:
-      #     oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
-      #     oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
-      #     tags: tag:ci
       
       - name: Terraform Init
         run: terraform init
