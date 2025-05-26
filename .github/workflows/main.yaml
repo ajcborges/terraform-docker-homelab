@@ -27,5 +27,7 @@ jobs:
       - name: Ping Nas
         run: |
           ping -c 16 100.89.146.113
+          ping -c 16 192.168.30.4
+          
 
  
