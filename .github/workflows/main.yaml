@@ -40,6 +40,12 @@ jobs:
       - name: 📡 Show Tailscale Status
         run: tailscale status
 
+      - name: Ping Nas
+        run: |
+          ping -c 16 whitewalker
+          ping -c 16 whitewalker.monitor-chimeras.ts.net
+          ping -c 16 100.94.13.113
+
       - name: 🔐 Set up SSH key
         run: |
           printf "%s" "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
