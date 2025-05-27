@@ -40,6 +40,12 @@ jobs:
       - name: 📡 Show Tailscale Status
         run: tailscale status
 
+      
+      - name: 🐞 Debug Tailscale SSH Policy
+        run: |
+          tailscale debug policy
+
+
       # - name: Ping WhiteWalker
       #   run: |
       #     ping -c 16 whitewalker
