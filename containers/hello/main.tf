@@ -13,7 +13,7 @@ terraform {
 
 # Docker provider config
 provider "docker" {
-  host = "ssh://ajcborges@100.94.13.113:22"
+  host = "ssh://ajcborges@whitewalker:22"
 }
 
 resource "docker_image" "nginx" {
