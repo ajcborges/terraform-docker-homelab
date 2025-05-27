@@ -45,7 +45,7 @@ jobs:
 
       - name: SSH test
         run: |
-          ssh -T ajcborges@100.94.13.113
+          ssh -o "StrictHostKeyChecking no" ${{ secrets.VPS_USER }}@whitewalker
 
       # - name: 🛠️ Setup Terraform
       #   uses: hashicorp/setup-terraform@v3
