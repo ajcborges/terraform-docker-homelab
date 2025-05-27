@@ -37,13 +37,12 @@ jobs:
           oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
           tags: tag:ci
 
-      - name: 📡 Show Tailscale Status
-        run: tailscale status
+      # - name: 📡 Show Tailscale Status
+      #   run: tailscale status
 
       
-      - name: 🐞 Debug Tailscale SSH Policy
-        run: |
-          tailscale debug policy
+      - name: 🔍 Tailscale Whoami
+        run: tailscale whois $(tailscale ip -4)
 
 
       # - name: Ping WhiteWalker
