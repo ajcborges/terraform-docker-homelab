@@ -62,7 +62,7 @@ jobs:
 
       - name: SSH test
         run: |
-          ssh ajcborges@100.94.13.113
+          ssh -vvv ajcborges@100.94.13.113
 
       - name: 🛠️ Setup Terraform
         uses: hashicorp/setup-terraform@v3
