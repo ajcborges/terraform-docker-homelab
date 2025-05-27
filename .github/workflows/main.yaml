@@ -37,36 +37,20 @@ jobs:
           oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
           tags: tag:ci
 
-      # - name: 📡 Show Tailscale Status
-      #   run: tailscale status
+      - name: 🔍 Tailscale Identity
+        run: |
+          tailscale status
+          tailscale whois $(tailscale ip -4)
 
-      
-      - name: 🔍 Tailscale Whoami
-        run: tailscale whois $(tailscale ip -4)
-
-
-      # - name: Ping WhiteWalker
-      #   run: |
-      #     ping -c 16 whitewalker
-      #     ping -c 16 whitewalker.monitor-chimeras.ts.net
-      #     ping -c 16 100.94.13.113
-
-      # - name: 🔐 Set up SSH key
-      #   run: |
-      #     mkdir -p ~/.ssh
-      #     printf "%s" "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-      #     chmod 600 ~/.ssh/id_rsa
-      #     ssh-keyscan -p 22 100.94.13.113 >> ~/.ssh/known_hosts
-      #   shell: bash
 
       - name: SSH test
         run: |
-          ssh -vvv ajcborges@100.94.13.113
+          ssh -T ajcborges@100.94.13.113
 
-      - name: 🛠️ Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: "1.3.3"
+      # - name: 🛠️ Setup Terraform
+      #   uses: hashicorp/setup-terraform@v3
+      #   with:
+      #     terraform_version: "1.3.3"
 
       # Optional: Enable Terraform caching to speed up subsequent runs
       # - name: 📦 Cache Terraform Plugin Directory
@@ -75,11 +59,11 @@ jobs:
       #     path: ~/.terraform.d/plugin-cache
       #     key: terraform-plugins-${{ runner.os }}-${{ hashFiles('**/*.tf') }}
 
-      - name: ⚙️ Terraform Init & Validate
-        run: |
-          terraform -chdir=containers/${{ env.APP_NAME }} init
-          terraform -chdir=containers/${{ env.APP_NAME }} validate
+      # - name: ⚙️ Terraform Init & Validate
+      #   run: |
+      #     terraform -chdir=containers/${{ env.APP_NAME }} init
+      #     terraform -chdir=containers/${{ env.APP_NAME }} validate
 
-      - name: 📄 Terraform Plan
-        run: |
-          terraform -chdir=containers/${{ env.APP_NAME }} plan -no-color -out .planfile
+      # - name: 📄 Terraform Plan
+      #   run: |
+      #     terraform -chdir=containers/${{ env.APP_NAME }} plan -no-color -out .planfile
