@@ -46,13 +46,13 @@ jobs:
       #     ping -c 16 whitewalker.monitor-chimeras.ts.net
       #     ping -c 16 100.94.13.113
 
-      - name: 🔐 Set up SSH key
-        run: |
-          mkdir -p ~/.ssh
-          printf "%s" "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -p 22 100.94.13.113 >> ~/.ssh/known_hosts
-        shell: bash
+      # - name: 🔐 Set up SSH key
+      #   run: |
+      #     mkdir -p ~/.ssh
+      #     printf "%s" "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+      #     chmod 600 ~/.ssh/id_rsa
+      #     ssh-keyscan -p 22 100.94.13.113 >> ~/.ssh/known_hosts
+      #   shell: bash
 
       - name: SSH test
         run: |
