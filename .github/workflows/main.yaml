@@ -22,7 +22,7 @@ jobs:
         uses: github/super-lint@v3
         env:
           DEFAULT_BRANCH: main
-          GITHUB_TOKEN: ${{secret.GTIHUB_TOKEN}}
+          GITHUB_TOKEN: ${{secret.TOKEN_GITHUB}}
 
       - name: 🔍 Detect Updated App Name
         id: detect-app
