@@ -4,7 +4,7 @@ terraform {
   required_providers {
     docker = {
       source  = "kreuzwerker/docker"
-      version = "~> 3.4.0"  # Allow patch updates like 3.4.x
+      version = "~> 3.4.0"  ### Allow patch updates like 3.4.x
     }
   }
 
