@@ -19,7 +19,7 @@ jobs:
           fetch-depth: 2
 
       - name: ⚙️ Run Super-Lint
-        uses: github/super-lint@v3
+        uses: github/super-linter@v3
         env:
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{secrets.TOKEN_GITHUB}}
