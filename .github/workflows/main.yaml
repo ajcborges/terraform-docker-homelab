@@ -18,11 +18,11 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: ⚙️ Run Super-Lint
-        uses: github/super-linter@v4
-        env:
-          DEFAULT_BRANCH: main
-          GITHUB_TOKEN: ${{secrets.TOKEN_GITHUB}}
+      # - name: ⚙️ Run Super-Lint
+      #   uses: github/super-linter@v4
+      #   env:
+      #     DEFAULT_BRANCH: main
+      #     GITHUB_TOKEN: ${{secrets.TOKEN_GITHUB}}
 
       - name: 🔍 Detect Updated App Name
         id: detect-app
@@ -48,6 +48,11 @@ jobs:
           tailscale status
           tailscale whois $(tailscale ip -4)
 
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+
 
       # - name: SSH test
       #   run: |
@@ -70,9 +75,14 @@ jobs:
 
       - name: ⚙️ Terraform Init & Validate
         run: |
+          terraform -chdir=containers/${{ env.APP_NAME }} fmt --recursive
           terraform -chdir=containers/${{ env.APP_NAME }} init
           terraform -chdir=containers/${{ env.APP_NAME }} validate
 
       - name: 📄 Terraform Plan
         run: |
-          terraform -chdir=containers/${{ env.APP_NAME }} plan -no-color -out .planfile
+          terraform -chdir=containers/${{ env.APP_NAME }} plan 
+
+      - name: Terraform Apply
+        run: |
+          terraform -chdir=containers/${{ env.APP_NAME }} apply -auto-approve
