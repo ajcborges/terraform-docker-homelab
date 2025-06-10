@@ -12,7 +12,10 @@ terraform {
     }
   }
 
-  backend "local" {}
+  backend "gcs" {
+    bucket  = "tf-homelab-backend"
+    prefix  = "containers/homepage/tfstate"
+  }
 }
 
 # Docker provider config
