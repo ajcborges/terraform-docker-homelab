@@ -1,5 +1,5 @@
 #################################
-# Terraform Version & Providers
+# Terraform Version & Providers.
 #################################
 
 terraform {
