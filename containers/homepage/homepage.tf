@@ -12,7 +12,7 @@ module "container" {
     HOMEPAGE_ALLOWED_HOSTS = "whitewalker:3000"
   }
   ports = [{
-    external = "3000"
+    external = "3001"
     internal = "3000"
     protocol = "tcp"
   }]
