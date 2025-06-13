@@ -43,3 +43,5 @@ resource "null_resource" "cleanup" {
     command = "rm -rf /mnt/citadel/homepage"
   }
 }
+
+# adding a dummy commit
