@@ -8,9 +8,11 @@ on:
       - main
 
 jobs:
-  dispatch-ci:
-    name: Run Terraform Plan for Updated Container
+  prepare:
+    name: Prepare Environment
     runs-on: ubuntu-latest
+    outputs:
+      app_name: ${{ steps.detect-app.outputs.app_name }}
 
     steps:
       - name: 📥 Checkout Repository
@@ -18,24 +20,24 @@ jobs:
         with:
           fetch-depth: 2
 
-      # - name: ⚙️ Run Super-Lint
-      #   uses: github/super-linter@v4
-      #   env:
-      #     DEFAULT_BRANCH: main
-      #     GITHUB_TOKEN: ${{secrets.TOKEN_GITHUB}}
-
       - name: 🔍 Detect Updated App Name
-        id: detect-app
+        id: detect-app      
         run: |
-          echo "Detecting application name from changed files under containers/..."
-          app_name=$(git diff --name-only ${{ github.sha }}~1 ${{ github.sha }} | grep '^containers/' | cut -d/ -f2 | sort -u | head -n1)
-          if [[ -z "$app_name" ]]; then
-            echo "No application detected. Exiting."
-            exit 1
-          fi
-          echo "Detected application: $app_name"
-          echo "APP_NAME=$app_name" >> $GITHUB_ENV
+          echo "Detecting application name from changed files under containers/..."
+          app_name=$(git diff --name-only ${{ github.sha }}~1 ${{ github.sha }} | grep '^containers/' | cut -d/ -f2 | sort -u | head -n1)
+          if [[ -z "$app_name" ]]; then
+            echo "No application detected. Exiting."
+            exit 1
+          fi
+          echo "Detected application: $app_name"
+          echo "::set-output name=app_name::$app_name"
 
+  authentication:
+    name: Authentication
+    runs-on: ubuntu-latest
+    needs: prepare
+
+    steps:
       - name: 🔐 Connect to Tailscale
         uses: tailscale/github-action@v3
         with:
@@ -43,35 +45,37 @@ jobs:
           oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
           tags: tag:github-ci
 
-      - name: 🔍 Tailscale Identity
-        run: |
-          tailscale status
-          tailscale whois $(tailscale ip -4)
-
       - name: Authenticate to GCP
         uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
 
+  
+  checks:
+    name: Resources Checks
+    runs-on: ubuntu-latest
+    needs: authentication
 
-      # - name: SSH test
-      #   run: |
-      #     ssh -o "StrictHostKeyChecking no" ${{ secrets.VPS_USER }}@whitewalker "
-      #       pwd
-      #       ls -ls
-      #     "
+    steps:
+      - name: 🔍 Tailscale Identity
+        run: |
+          tailscale status
+          tailscale whois $(tailscale ip -4)
 
+  
+  plan:
+    name: Terraform Plan
+    runs-on: ubuntu-latest
+    needs: checks
+    env:
+      APP_NAME: ${{ needs.prepare.outputs.app_name }}
+
+
+    steps:
       - name: 🛠️ Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: "1.3.3"
-
-      # Optional: Enable Terraform caching to speed up subsequent runs
-      # - name: 📦 Cache Terraform Plugin Directory
-      #   uses: actions/cache@v3
-      #   with:
-      #     path: ~/.terraform.d/plugin-cache
-      #     key: terraform-plugins-${{ runner.os }}-${{ hashFiles('**/*.tf') }}
 
       - name: ⚙️ Terraform Init & Validate
         run: |
@@ -83,6 +87,17 @@ jobs:
         run: |
           terraform -chdir=containers/${{ env.APP_NAME }} plan 
 
+  
+  apply:
+    name: Terraform Apply
+    runs-on: ubuntu-latest
+    needs: plan
+    environment:
+      name: production
+    env:
+      APP_NAME: ${{ needs.prepare.outputs.app_name }}
+
+    steps:
       - name: Terraform Apply
         run: |
           terraform -chdir=containers/${{ env.APP_NAME }} apply -auto-approve
