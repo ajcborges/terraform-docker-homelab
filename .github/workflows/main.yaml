@@ -50,7 +50,7 @@ jobs:
     steps:
       - name: print variables
         run: |
-          echo "Application Name v1: ${{ prepare.outputs.app_name }}"
+          echo "Application Name v1: ${{ needs.prepare.outputs.app_name }}"
           echo "Application Name v2: ${APP_NAME}"
         
       - name: 🛠️ Setup Terraform
