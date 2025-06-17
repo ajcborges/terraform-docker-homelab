@@ -30,7 +30,7 @@ jobs:
             exit 1
           fi
           echo "Detected application: $app_name"
-          echo "::set-output name=app_name::$app_name"
+          echo "app_name=$app_name" >> $GITHUB_OUTPUT
 
   authentication:
     name: Authentication
