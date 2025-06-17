@@ -9,10 +9,10 @@ module "container" {
     PUID = "1000"
     GUID = "1000"
     TZ   = "Australia/Melbourne"
-    HOMEPAGE_ALLOWED_HOSTS = "whitewalker:3000"
+    HOMEPAGE_ALLOWED_HOSTS = "whitewalker:3001"
   }
   ports = [{
-    external = "3000"
+    external = "3001"
     internal = "3000"
     protocol = "tcp"
   }]
@@ -32,16 +32,3 @@ module "container" {
   }
 }
 
-# 🔥 Your cleanup block (right after the module)
-resource "null_resource" "cleanup" {
-  triggers = {
-    always_run = "${timestamp()}"
-  }
-
-  provisioner "local-exec" {
-    when    = destroy
-    command = "rm -rf /mnt/citadel/homepage"
-  }
-}
-
-# adding a dummy commit
