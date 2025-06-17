@@ -7,7 +7,7 @@ on:
     paths:
       - 'containers/**'
     branches:
-      - main
+      - ajcborges-patch-1
 
 jobs:
   prepare:
