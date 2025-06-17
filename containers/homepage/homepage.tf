@@ -1,7 +1,7 @@
 module "container" {
   source = "git::https://github.com/ajcborges/terraform-modules.git//container?ref=ba73b21"
 
-  image          = "ghcr.io/gethomepage/homepage:latest"
+  image          = "ghcr.io/gethomepage/homepage:v1.3.2"
   container_name = "homepage"
   hostname       = "homepage"
   restart_policy = "unless-stopped"
@@ -9,10 +9,10 @@ module "container" {
     PUID = "1000"
     GUID = "1000"
     TZ   = "Australia/Melbourne"
-    HOMEPAGE_ALLOWED_HOSTS = "whitewalker:3008"
+    HOMEPAGE_ALLOWED_HOSTS = "whitewalker:3003"
   }
   ports = [{
-    external = "3008"
+    external = "3003"
     internal = "3000"
     protocol = "tcp"
   }]
