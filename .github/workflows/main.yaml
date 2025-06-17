@@ -17,7 +17,9 @@ jobs:
 
     steps:
       - id: set_app_name
-        run: echo ${app_name} >> $GITHUB_OUTPUT
+        run: |
+          echo ${app_name}
+          echo ${app_name} >> $GITHUB_OUTPUT
         
       - name: 📥 Checkout Repository
         uses: actions/checkout@v4
