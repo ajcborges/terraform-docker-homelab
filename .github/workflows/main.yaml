@@ -3,7 +3,7 @@ run-name: ${{ github.actor }} is learning GitHub Actions
 
 on:
   pull_request:
-    types: [Opened, reopened]
+    types: [opened, reopened]
     paths:
       - 'containers/**'
     branches:
