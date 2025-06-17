@@ -18,27 +18,9 @@ jobs:
 
     steps:
       - name: 📥 Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 2
-
-      - name: 🔍 Detect Updated App Names
-        id: detect-app
-        run: |
-          echo "Detecting updated applications under containers/..."
-          changed_files=$(git diff --name-only ${{ github.sha }}~1 ${{ github.sha }})
-          echo "Changed files: $changed_files"
-      
-          # Extract unique app names from the 'containers/' directory
-          apps=$(echo "$changed_files" | grep '^containers/' | cut -d/ -f2 | sort -u | tr '\n' ',' | sed 's/,$//')
-      
-          if [[ -z "$apps" ]]; then
-            echo "No applications detected. Exiting."
-            exit 1
-          fi
-      
-          echo "Detected applications: $apps"
-          echo "app_names=$apps" >> $GITHUB_OUTPUT
 
   authentication:
     name: Authentication
@@ -46,35 +28,31 @@ jobs:
     needs: prepare
 
     steps:
+          
       - name: 🔐 Connect to Tailscale
         uses: tailscale/github-action@v3
         with:
           oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
           oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
           tags: tag:github-ci
-
+          
       - name: 🔑 Authenticate to GCP
+        id: auth
         uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
-
-  # checks:
-  #   name: Network Checks
-  #   runs-on: ubuntu-latest
-  #   needs: authentication
-
-  #   steps:
-  #     - name: 🔍 Tailscale Identity
-  #       run: |
-  #         tailscale status
-  #         tailscale whois $(tailscale ip -4)
+          token_format: 'access_token'
+          export_environment_variables: true
 
   plan:
     name: Terraform Plan
     runs-on: ubuntu-latest
-    needs: authentication
+    needs: 
+      - authentication
+      - prepare
     env:
       APP_NAME: ${{ needs.prepare.outputs.app_name }}
+      GCP_TOKEN: ${{ needs.authentication.outputs.access_token }}
 
     steps:
       - name: 🛠️ Setup Terraform
