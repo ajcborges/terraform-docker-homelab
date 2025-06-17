@@ -9,22 +9,26 @@ on:
   workflow_dispatch:
 
 jobs:
-  prepare:
-    name: Prepare Environment
+  detect-changed-folders:
     runs-on: ubuntu-latest
-    outputs:
-      app_name: ${{ steps.detect-app.outputs.app_name }}
-
     steps:
-      - id: set_app_name
-        run: |
-          echo ${app_name}
-          echo ${app_name} >> $GITHUB_OUTPUT
-        
-      - name: 📥 Checkout Repository
+      - name: Checkout repo
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 2  # required to compare with last 2 commits
+
+      - name: Get changed folders
+        id: changed
+        run: |
+          echo "Modified folders:"
+          git diff --name-only origin/${{ github.event.pull_request.base.ref || github.event.before }}...HEAD |
+          awk -F/ '{print $1}' | sort -u > folders.txt
+          cat folders.txt
+          echo "folders=$(paste -sd, folders.txt)" >> "$GITHUB_OUTPUT"
+
+      - name: Print changed folders
+        run: |
+          echo "Changed folders: ${{ steps.changed.outputs.folders }}"
 
   # authentication:
   #   name: Authentication
