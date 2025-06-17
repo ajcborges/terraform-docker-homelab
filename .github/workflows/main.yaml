@@ -20,17 +20,23 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: 🔍 Detect Updated App Name
+      - name: 🔍 Detect Updated App Names
         id: detect-app
         run: |
-          echo "Detecting application name from changed files under containers/..."
-          app_name=$(git diff --name-only ${{ github.sha }}~1 ${{ github.sha }} | grep '^containers/' | cut -d/ -f2 | sort -u | head -n1)
-          if [[ -z "$app_name" ]]; then
-            echo "No application detected. Exiting."
+          echo "Detecting updated applications under containers/..."
+          changed_files=$(git diff --name-only ${{ github.sha }}~1 ${{ github.sha }})
+          echo "Changed files: $changed_files"
+      
+          # Extract unique app names from the 'containers/' directory
+          apps=$(echo "$changed_files" | grep '^containers/' | cut -d/ -f2 | sort -u | tr '\n' ',' | sed 's/,$//')
+      
+          if [[ -z "$apps" ]]; then
+            echo "No applications detected. Exiting."
             exit 1
           fi
-          echo "Detected application: $app_name"
-          echo "app_name=$app_name" >> $GITHUB_OUTPUT
+      
+          echo "Detected applications: $apps"
+          echo "app_names=$apps" >> $GITHUB_OUTPUT
 
   authentication:
     name: Authentication
