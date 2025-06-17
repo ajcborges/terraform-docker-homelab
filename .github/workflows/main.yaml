@@ -28,6 +28,9 @@ jobs:
         uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+
+      - name: Print working directory
+        run: pwd
         
       - name: 🔍 Find Terraform Subdirectories
         id: find-dir
