@@ -9,7 +9,7 @@ This repo manages the deployment of a `Homepage` container using **Terraform** a
 
 ---
 
-## 🖼️ Architecture Overview.
+## 🖼️ Architecture Overview
 
 ```plaintext
    ┌─────────────┐
