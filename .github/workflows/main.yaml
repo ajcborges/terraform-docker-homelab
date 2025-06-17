@@ -46,9 +46,13 @@ jobs:
       - prepare
     env:
       APP_NAME: ${{ needs.prepare.outputs.app_name }}
-      GCP_TOKEN: ${{ needs.authentication.outputs.access_token }}
 
     steps:
+      - name: print variables
+        run: |
+          echo "Application Name v1: ${{ prepare.outputs.app_name }}"
+          echo "Application Name v2: ${APP_NAME}"
+        
       - name: 🛠️ Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
