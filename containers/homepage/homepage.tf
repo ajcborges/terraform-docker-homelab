@@ -9,17 +9,17 @@ module "container" {
     PUID = "1000"
     GUID = "1000"
     TZ   = "Australia/Melbourne"
-    HOMEPAGE_ALLOWED_HOSTS = "whitewalker:3001"
+    HOMEPAGE_ALLOWED_HOSTS = "whitewalker:3000"
   }
   ports = [{
-    external = "3001"
+    external = "3000"
     internal = "3000"
     protocol = "tcp"
   }]
 
 
   host_paths = {
-    "/mnt/citadel/homepage/" = {
+    "/mnt/usb2tb/containers/homepage/" = {
       container_path = "/app/config/"
       read_only      = false
     },
