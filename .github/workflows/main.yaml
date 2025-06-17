@@ -34,6 +34,11 @@ jobs:
         run: |
           echo "TF_DIR=$(find containers -mindepth 1 -maxdepth 1 -type d | head -n 1)" >> "$GITHUB_OUTPUT"
 
+      - name: 🛠️ Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.3.3"
+
       - name: 📦 Terraform Init & Plan
         run: |
           terraform -chdir=${{ steps.find-dir.outputs.TF_DIR }} init
