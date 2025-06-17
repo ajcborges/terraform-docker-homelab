@@ -32,6 +32,7 @@ jobs:
       - name: 🔍 Find Terraform Subdirectories
         id: find-dir
         run: |
+          echo "TF_DIR=$(find containers -mindepth 1 -maxdepth 1 -type d | head -n 1)" 
           echo "TF_DIR=$(find containers -mindepth 1 -maxdepth 1 -type d | head -n 1)" >> "$GITHUB_OUTPUT"
 
       - name: 🛠️ Setup Terraform
@@ -44,110 +45,43 @@ jobs:
           terraform -chdir=${{ steps.find-dir.outputs.TF_DIR }} init
           terraform -chdir=${{ steps.find-dir.outputs.TF_DIR }} plan -out=tf.plan
 
-  apply:
-      name: Terraform Apply
-      runs-on: ubuntu-latest
-      needs: plan  # optional: only run apply if plan succeeds
-      environment:
-        name: production
-      if: github.ref == 'refs/heads/main'  # only run on main branch (optional safety check)
-      steps:
-        - name: 🧾 Checkout Repo
-          uses: actions/checkout@v4
-
-        - name: 🔐 Connect to Tailscale
-          uses: tailscale/github-action@v3
-          with:
-            oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
-            oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
-            tags: tag:github-ci
-          
-        - name: 🔑 Authenticate to GCP
-          id: auth
-          uses: google-github-actions/auth@v2
-          with:
-            credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
-  
-        - name: 🔍 Find Terraform Subdirectory
-          id: find-dir
-          run: |
-            echo "TF_DIR=$(find containers -mindepth 1 -maxdepth 1 -type d | head -n 1)" >> "$GITHUB_OUTPUT"
-
-        - name: 🛠️ Setup Terraform
-          uses: hashicorp/setup-terraform@v3
-          with:
-            terraform_version: "1.3.3"
-  
-        - name: 📦 Terraform Init
-          run: terraform -chdir=${{ steps.find-dir.outputs.TF_DIR }} init
-  
-        - name: 🚀 Terraform Apply
-          run: terraform -chdir=${{ steps.find-dir.outputs.TF_DIR }} apply -auto-approve
-    
-
-  # authentication:
-  #   name: Authentication
-  #   runs-on: ubuntu-latest
-  #   needs: [prepare]
-
-  #   steps:
-          
-  #     - name: 🔐 Connect to Tailscale
-  #       uses: tailscale/github-action@v3
-  #       with:
-  #         oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
-  #         oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
-  #         tags: tag:github-ci
-          
-  #     - name: 🔑 Authenticate to GCP
-  #       id: auth
-  #       uses: google-github-actions/auth@v2
-  #       with:
-  #         credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
-
-
-  # plan:
-  #   name: Terraform Plan
-  #   runs-on: ubuntu-latest
-  #   needs: 
-  #     - authentication
-  #     - prepare
-  #   env:
-  #     APP_NAME: ${{ needs.prepare.outputs.app_name }}
-
-  #   steps:
-  #     - name: print variables
-  #       run: |
-  #         echo "Application Name v1: ${{ steps.prepare.outputs.app_name }}"
-  #         echo "Application Name v2: ${APP_NAME}"
-        
-  #     - name: 🛠️ Setup Terraform
-  #       uses: hashicorp/setup-terraform@v3
-  #       with:
-  #         terraform_version: "1.3.3"
-
-  #     - name: ⚙️ Terraform Init & Validate
-  #       run: |
-  #         APP_NAME="${{ needs.prepare.outputs.app_name }}"
-  #         echo "Using APP_NAME=$APP_NAME"
-  #         ls -l containers/$APP_NAME || (echo "Directory does not exist" && exit 1)
-  #         terraform -chdir=containers/$APP_NAME fmt --recursive
-  #         terraform -chdir=containers/$APP_NAME init
-  #         terraform -chdir=containers/$APP_NAME validate
-
-  #     - name: 📄 Terraform Plan
-  #       run: |
-  #         terraform -chdir=containers/${APP_NAME} plan
-
   # apply:
-  #   name: Terraform Apply
-  #   runs-on: ubuntu-latest
-  #   needs: plan
-  #   environment: production
-  #   env:
-  #     APP_NAME: ${{ needs.prepare.outputs.app_name }}
+  #     name: Terraform Apply
+  #     runs-on: ubuntu-latest
+  #     needs: plan  # optional: only run apply if plan succeeds
+  #     environment:
+  #       name: production
+  #     if: github.ref == 'refs/heads/main'  # only run on main branch (optional safety check)
+  #     steps:
+  #       - name: 🧾 Checkout Repo
+  #         uses: actions/checkout@v4
 
-  #   steps:
-  #     - name: 🚀 Terraform Apply
-  #       run: |
-  #         terraform -chdir=containers/${APP_NAME} apply -auto-approve
+  #       - name: 🔐 Connect to Tailscale
+  #         uses: tailscale/github-action@v3
+  #         with:
+  #           oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+  #           oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+  #           tags: tag:github-ci
+          
+  #       - name: 🔑 Authenticate to GCP
+  #         id: auth
+  #         uses: google-github-actions/auth@v2
+  #         with:
+  #           credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+  
+  #       - name: 🔍 Find Terraform Subdirectory
+  #         id: find-dir
+  #         run: |
+  #           echo "TF_DIR=$(find containers -mindepth 1 -maxdepth 1 -type d | head -n 1)" >> "$GITHUB_OUTPUT"
+
+  #       - name: 🛠️ Setup Terraform
+  #         uses: hashicorp/setup-terraform@v3
+  #         with:
+  #           terraform_version: "1.3.3"
+  
+  #       - name: 📦 Terraform Init
+  #         run: terraform -chdir=${{ steps.find-dir.outputs.TF_DIR }} init
+  
+  #       - name: 🚀 Terraform Apply
+  #         run: terraform -chdir=${{ steps.find-dir.outputs.TF_DIR }} apply -auto-approve
+ 
