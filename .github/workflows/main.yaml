@@ -9,29 +9,35 @@ on:
   workflow_dispatch:
 
 jobs:
-  detect-changed-folders:
+  plan:
+    name: Terraform Plan
     runs-on: ubuntu-latest
     steps:
-      - name: Get changed top-level folders
-        id: changed-folders
+      - name: 🔐 Connect to Tailscale
+        uses: tailscale/github-action@v3
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:github-ci
+          
+      - name: 🔑 Authenticate to GCP
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+
+      - name: 🧾 Checkout Repo
+        uses: actions/checkout@v4
+        
+      - name: 🔍 Find Terraform Subdirectories
+        id: find-dir
         run: |
-          # Fetch all history to ensure diff works (if not already fetched)
-          git fetch --no-tags --prune --depth=0 origin
-      
-          # Determine base SHA depending on event type
-          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            BASE_SHA="${{ github.event.pull_request.base.sha }}"
-          else
-            BASE_SHA="${{ github.event.before }}"
-          fi
-      
-          # Get top-level folders with changes
-          CHANGED=$(git diff --name-only $BASE_SHA HEAD | awk -F/ '{print $1}' | sort -u)
-          echo "Changed folders:"
-          echo "$CHANGED"
-      
-          # Export as comma-separated list
-          echo "folders=$(echo $CHANGED | tr '\n' ',' | sed 's/,$//')" >> "$GITHUB_OUTPUT"
+          echo "TF_DIR=$(find containers -mindepth 1 -maxdepth 1 -type d | head -n 1)" >> "$GITHUB_OUTPUT"
+
+      - name: 📦 Terraform Init & Plan
+        run: |
+          terraform -chdir=${{ steps.find-dir.outputs.TF_DIR }} init
+          terraform -chdir=${{ steps.find-dir.outputs.TF_DIR }} plan -out=tf.plan
     
 
   # authentication:
