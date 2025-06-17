@@ -32,7 +32,7 @@ jobs:
       - name: 🔍 Find Terraform Subdirectories
         id: find-dir
         run: |
-          echo "TF_DIR=$(find containers -mindepth 1 -maxdepth 1 -type d | head -n 1)" 
+          echo "TF_DIR=$(find containers -mindepth 1 -maxdepth 1 -type d )" 
           echo "TF_DIR=$(find containers -mindepth 1 -maxdepth 1 -type d | head -n 1)" >> "$GITHUB_OUTPUT"
 
       - name: 🛠️ Setup Terraform
