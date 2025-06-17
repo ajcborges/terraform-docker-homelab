@@ -12,23 +12,27 @@ jobs:
   detect-changed-folders:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 2  # required to compare with last 2 commits
-
-      - name: Get changed folders
-        id: changed
+      - name: Get changed top-level folders
+        id: changed-folders
         run: |
-          echo "Modified folders:"
-          git diff --name-only origin/${{ github.event.pull_request.base.ref || github.event.before }}...HEAD |
-          awk -F/ '{print $1}' | sort -u > folders.txt
-          cat folders.txt
-          echo "folders=$(paste -sd, folders.txt)" >> "$GITHUB_OUTPUT"
-
-      - name: Print changed folders
-        run: |
-          echo "Changed folders: ${{ steps.changed.outputs.folders }}"
+          # Fetch all history to ensure diff works (if not already fetched)
+          git fetch --no-tags --prune --depth=0 origin
+      
+          # Determine base SHA depending on event type
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          else
+            BASE_SHA="${{ github.event.before }}"
+          fi
+      
+          # Get top-level folders with changes
+          CHANGED=$(git diff --name-only $BASE_SHA HEAD | awk -F/ '{print $1}' | sort -u)
+          echo "Changed folders:"
+          echo "$CHANGED"
+      
+          # Export as comma-separated list
+          echo "folders=$(echo $CHANGED | tr '\n' ',' | sed 's/,$//')" >> "$GITHUB_OUTPUT"
+    
 
   # authentication:
   #   name: Authentication
