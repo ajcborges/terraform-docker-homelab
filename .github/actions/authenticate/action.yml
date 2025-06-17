@@ -1,0 +1,26 @@
+name: Authenticate to Tailscale and GCP
+description: Authenticates to Tailscale and Google Cloud
+inputs:
+  ts_oauth_client_id:
+    required: true
+    description: Tailscale OAuth Client ID
+  ts_oauth_secret:
+    required: true
+    description: Tailscale OAuth Secret
+  gcp_credentials_json:
+    required: true
+    description: GCP credentials JSON
+runs:
+  using: "composite"
+  steps:
+    - name: 🔐 Connect to Tailscale
+      uses: tailscale/github-action@v3
+      with:
+        oauth-client-id: ${{ inputs.ts_oauth_client_id }}
+        oauth-secret: ${{ inputs.ts_oauth_secret }}
+        tags: tag:github-ci
+
+    - name: 🔑 Authenticate to GCP
+      uses: google-github-actions/auth@v2
+      with:
+        credentials_json: ${{ inputs.gcp_credentials_json }}
