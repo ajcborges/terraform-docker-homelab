@@ -9,10 +9,10 @@ module "container" {
     PUID = "1000"
     GUID = "1000"
     TZ   = "Australia/Melbourne"
-    HOMEPAGE_ALLOWED_HOSTS = "whitewalker:3005"
+    HOMEPAGE_ALLOWED_HOSTS = "whitewalker:3006"
   }
   ports = [{
-    external = "3005"
+    external = "3006"
     internal = "3000"
     protocol = "tcp"
   }]
