@@ -35,19 +35,19 @@ jobs:
           # Get a list of changed paths
           CHANGED=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} -- containers/)
 
-          # Extract top-level folders under containers/
-          FOLDERS=$(echo "$CHANGED" | grep '^containers/' | cut -d '/' -f2 | sort -u)
+      #     # Extract top-level folders under containers/
+      #     FOLDERS=$(echo "$CHANGED" | grep '^containers/' | cut -d '/' -f2 | sort -u)
 
-          echo "Changed folders:"
-          echo "$FOLDERS"
+      #     echo "Changed folders:"
+      #     echo "$FOLDERS"
 
-          # Export to GitHub Actions output
-          echo "folders=$FOLDERS" >> "$GITHUB_OUTPUT"
+      #     # Export to GitHub Actions output
+      #     echo "folders=$FOLDERS" >> "$GITHUB_OUTPUT"
 
-      - name: Use folder list
-        run: |
-          echo "Folders changed under containers/:"
-          echo "${{ steps.changed.outputs.folders }}"
+      # - name: Use folder list
+      #   run: |
+      #     echo "Folders changed under containers/:"
+      #     echo "${{ steps.changed.outputs.folders }}"
         
       - name: 🔍 Find Terraform Subdirectories
         id: find-dir
