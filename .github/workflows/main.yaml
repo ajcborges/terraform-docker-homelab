@@ -73,13 +73,13 @@ jobs:
         with:
           terraform_version: "1.3.3"
 
-      - name: 🗃️ Cache Terraform Plugins (Optional)
-        uses: actions/cache@v3
-        with:
-          path: ~/.terraform.d/plugin-cache
-          key: terraform-${{ runner.os }}-${{ hashFiles('**/*.tf') }}
-          restore-keys: |
-            terraform-${{ runner.os }}-
+      # - name: 🗃️ Cache Terraform Plugins (Optional)
+      #   uses: actions/cache@v3
+      #   with:
+      #     path: ~/.terraform.d/plugin-cache
+      #     key: terraform-${{ runner.os }}-${{ hashFiles('**/*.tf') }}
+      #     restore-keys: |
+      #       terraform-${{ runner.os }}-
 
       - name: 📦 Terraform Init
         run: |
