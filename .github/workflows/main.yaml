@@ -14,7 +14,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       dirs: ${{ steps.set-dirs.outputs.changed_dirs }}
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -30,15 +29,16 @@ jobs:
             echo "No relevant directory changes detected."
             echo 'changed_dirs=[]' >> "$GITHUB_OUTPUT"
           else
-            echo "changed_dirs=$dirs" >> "$GITHUB_OUTPUT"
+            echo "changed_dirs=$dirs" >> "$GITHUB_OUTPUT
           fi
+          
   debug-output:
     needs: detect-changes
     runs-on: ubuntu-latest
     steps:
       - run: |
           echo "Raw changed_dirs value:"
-          echo "${{ needs.detect-changes.outputs.changed_dirs }}"
+          echo "${{ needs.detect-changes.outputs.dirs }}"
 
   plan:
     needs: detect-changes
