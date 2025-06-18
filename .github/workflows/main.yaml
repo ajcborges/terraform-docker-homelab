@@ -36,8 +36,8 @@ jobs:
 
   plan:
     needs: detect-changes
+    if: needs.detect-changes.outputs.changed_dirs != '[]' && needs.detect-changes.outputs.changed_dirs != ''
     name: Terraform Plan
-    if: ${{ needs.detect-changes.outputs.changed_dirs != '[]' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -86,11 +86,9 @@ jobs:
           terraform plan 
           
   apply:
-      needs: 
-        - detect-changes
-        - plan
+      needs: [ detect-changes, plan ]
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push' && needs.detect-changes.outputs.changed_dirs != '[]' && needs.detect-changes.outputs.changed_dirs != ''
       name: Terraform Apply
-      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       runs-on: ubuntu-latest
       strategy:
         matrix:
