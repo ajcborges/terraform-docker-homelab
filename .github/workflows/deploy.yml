@@ -1,5 +1,5 @@
 name: Homelab CI/CD
-run-name: "Deploy - ${{ github.ref_name }}"
+run-name: "Deploy (CD) - ${{ github.ref_name }}"
 
 on:
   push:
