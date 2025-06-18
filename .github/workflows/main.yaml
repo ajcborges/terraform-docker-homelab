@@ -9,7 +9,7 @@ on:
       - reopened
       - synchronize  # Triggered when commits are pushed to the PR
     paths-ignore:
-      - '*.md'
+      - '**/*.md'
 
   workflow_dispatch:
 
