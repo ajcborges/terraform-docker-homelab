@@ -1,6 +1,5 @@
-name: learn-github-actions
-run-name: ${{ github.actor }} is learning GitHub Actions
-
+name: Homelab CI/CD
+run-name: CI Validation
 
 on:
   # issue_comment:
@@ -19,8 +18,8 @@ jobs:
   plan:
     name: Terraform Plan
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: read  # Optional but helpful
+    # permissions:
+    #   pull-requests: read  # Optional but helpful
     steps:
       - name: 🧾 Checkout Repo
         uses: actions/checkout@v3
