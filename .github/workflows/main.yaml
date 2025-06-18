@@ -30,7 +30,7 @@ jobs:
             echo "No relevant directory changes detected."
             echo 'changed_dirs=[]' >> "$GITHUB_OUTPUT"
           else
-            echo "changed_dirs=$dirs" >> "$GITHUB_OUTPUT"
+            echo 'changed_dirs=$dirs' >> "$GITHUB_OUTPUT"
           fi
   debug-output:
     needs: detect-changes
