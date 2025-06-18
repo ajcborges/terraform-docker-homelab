@@ -2,10 +2,6 @@ name: Homelab CI/CD
 run-name: CI Validation
 
 on:
-  # issue_comment:
-  #   types: [created]
-  # push:
-  #   branches: [ main ]
   pull_request:
     types: [opened, reopened, synchronize]  
     paths-ignore:
@@ -14,10 +10,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  # report-trigger:
-  #   if: |
-  #     github.event.issue.pull_request && 
-  #     contains(github.event.comment.body, 'report'
   detect-changes:
     runs-on: ubuntu-latest
     outputs:
@@ -43,8 +35,6 @@ jobs:
     defaults:
       run:
         working-directory: ${{ matrix.dir }}
-    # permissions:
-    #   pull-requests: read  # Optional but helpful
     steps:
       - name: 🧾 Checkout Repo
         uses: actions/checkout@v4
