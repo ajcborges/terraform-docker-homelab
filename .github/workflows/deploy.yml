@@ -1,4 +1,4 @@
-name: Homelab CI/CD
+name: Homelab Deploy
 run-name: "Deploy (CD) - ${{ github.ref_name }}"
 
 on:
