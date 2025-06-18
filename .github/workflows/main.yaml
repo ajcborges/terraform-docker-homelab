@@ -21,7 +21,7 @@ jobs:
   detect-changes:
     runs-on: ubuntu-latest
     outputs:
-      dir: ${{ step.set-dirs.outputs.chnages_dirs }}
+      dirs: ${{ step.set-dirs.outputs.chnages_dirs }}
 
     steps:
       - name: Checkout code
