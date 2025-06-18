@@ -23,7 +23,7 @@ jobs:
       pull-requests: read  # Optional but helpful
     steps:
       - name: 🧾 Checkout Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0        
         
