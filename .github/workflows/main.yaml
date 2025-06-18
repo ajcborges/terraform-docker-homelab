@@ -1,5 +1,5 @@
 name: Homelab CI/CD
-run-name: CI Validation
+run-name: "CI Validation - ${{ github.ref_name }}"
 
 on:
   pull_request:
