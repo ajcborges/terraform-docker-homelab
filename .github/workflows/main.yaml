@@ -25,18 +25,23 @@ jobs:
           git fetch origin ${{ github.base_ref }} --depth=1
           dirs=$(git diff --name-only origin/${{ github.base_ref }} ${{ github.sha }} | grep '^containers/' | awk -F/ '{print $1"/"$2}' | sort -u | jq -R -s -c 'split("\n")[:-1]')
           echo "Changed directories: $dirs"
-          echo "changed_dirs=$dirs" >> "$GITHUB_OUTPUT"
+          
 
           if [[ "$dirs" == "[]" || -z "$dirs" ]]; then
             echo "No relevant directory changes detected."
+            echo "changed_dirs=$dirs" >> "$GITHUB_OUTPUT"
           else
             echo "Changed directories: $dirs"
+            echo "changed_dirs=$dirs" >> "$GITHUB_OUTPUT"
           fi
-          echo "changed_dirs=$dirs" >> "$GITHUB_OUTPUT"
+          
 
   plan:
     needs: detect-changes
-    if: needs.detect-changes.outputs.changed_dirs != '[]' && needs.detect-changes.outputs.changed_dirs != ''
+    if: >
+      needs.detect-changes.outputs.changed_dirs != '[]' &&
+      needs.detect-changes.outputs.changed_dirs != '' &&
+      needs.detect-changes.outputs.changed_dirs != null
     name: Terraform Plan
     runs-on: ubuntu-latest
     strategy:
