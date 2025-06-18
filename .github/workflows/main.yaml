@@ -3,8 +3,8 @@ run-name: ${{ github.actor }} is learning GitHub Actions
 
 
 on:
-  issue_comment:
-    types: [created]
+  # issue_comment:
+  #   types: [created]
   pull_request:
     types: [opened, reopened, synchronize]  
     paths-ignore:
@@ -12,10 +12,11 @@ on:
   workflow_dispatch:
 
 jobs:
-  report-trigger:
-    if: |
-      github.event.issue.pull_request && 
-      contains(github.event.comment.body, 'report'
+  # report-trigger:
+  #   if: |
+  #     github.event.issue.pull_request && 
+  #     contains(github.event.comment.body, 'report'
+  plan:
     name: Terraform Plan
     runs-on: ubuntu-latest
     permissions:
