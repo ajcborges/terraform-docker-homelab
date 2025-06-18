@@ -34,14 +34,17 @@ jobs:
             echo "Changed directories: $dirs"
             echo "changed_dirs=$dirs" >> "$GITHUB_OUTPUT"
           fi
-          
+  debug-output:
+    needs: detect-changes
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "Raw changed_dirs value:"
+          echo "${{ needs.detect-changes.outputs.changed_dirs }}"
 
   plan:
     needs: detect-changes
-    if: >
-      needs.detect-changes.outputs.changed_dirs != '[]' &&
-      needs.detect-changes.outputs.changed_dirs != '' &&
-      needs.detect-changes.outputs.changed_dirs != null
+    if: ${{ needs.detect-changes.outputs.changed_dirs != '[]' && needs.detect-changes.outputs.changed_dirs != '' && needs.detect-changes.outputs.changed_dirs != null }}
     name: Terraform Plan
     runs-on: ubuntu-latest
     strategy:
