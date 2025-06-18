@@ -16,7 +16,7 @@ jobs:
       - name: 🧾 Checkout Repo
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0        
         
       - name: 🔐 Connect to Tailscale
         uses: tailscale/github-action@v3
@@ -33,6 +33,7 @@ jobs:
 
       
       - name: Get changes in folder
+        working-directory: ./containers
         run: |
           pwd; ls -las
           git fetch origin main
