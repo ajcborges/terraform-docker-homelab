@@ -1,11 +1,16 @@
 name: learn-github-actions
 run-name: ${{ github.actor }} is learning GitHub Actions
 
+
 on:
-  # pull_request:          # triggers on any PR targeting any branch
-  push:
-    paths:
-      - 'containers/**'  # triggers on any change inside the containers/ folder
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize  # Triggered when commits are pushed to the PR
+    paths-ignore:
+      - '*.md'
+
   workflow_dispatch:
 
 jobs:
