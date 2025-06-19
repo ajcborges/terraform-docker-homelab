@@ -90,5 +90,9 @@ jobs:
       - name: 📦 Terraform  Plan
         run: |
           terraform plan 
+      # - uses: actions/upload-artifacts@v4
+      #   with:
+      #     name: Terraform Plan Saved
+      #     path: public/
           
   
