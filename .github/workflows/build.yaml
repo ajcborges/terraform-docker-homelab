@@ -22,8 +22,8 @@ jobs:
       - name: Get changed directories
         id: set-dirs
         run: |
-          git fetch origin ${{ github.base_ref }} --depth=1
-          dirs=$(git diff --name-only origin/${{ github.base_ref }} ${{ github.sha }} | grep '^containers/' | awk -F/ '{print $1"/"$2}' | sort -u | jq -R -s -c 'split("\n")[:-1]')
+          git fetch origin ${{ github.ref }} --depth=1
+          dirs=$(git diff --name-only HEAD~1 HEAD | grep '^containers/' | awk -F/ '{print $1"/"$2}' | sort -u | jq -R -s -c 'split("\n")[:-1]')
           echo "Changed directories: $dirs"
 
           if [[ "$dirs" == "[]" || -z "$dirs" ]]; then
