@@ -73,7 +73,7 @@ jobs:
       - name: 🛠️ Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: "1.5.7"
+          terraform_version: "1.3.3"
 
       - name: Run tfsec
         uses: aquasecurity/tfsec-action@v1.0.0
