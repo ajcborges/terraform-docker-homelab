@@ -99,7 +99,7 @@ jobs:
           terraform plan -out terraform.tfplan
       - uses: actions/upload-artifacts@v4
         with:
-          name: Terraform Plan Saved
-          path: public/
+          name: terraform-plan-${{ matrix.dir }}
+          path: ${{ matrix.dir }}/terraform.tfplan
           
   
