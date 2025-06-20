@@ -43,9 +43,11 @@ jobs:
     needs: detect-changes
     runs-on: ubuntu-latest
     steps:
-      - run: |
-          echo "Raw changed_dirs value:"
-          echo "${{ needs.detect-changes.outputs.dirs }}"
+      - name: Show Changed Directories
+        run: |
+          echo "Terraform directories changed:"
+          echo "${{ needs.detect-changes.outputs.dirs }}" | jq .
+
 
   plan:
     needs: detect-changes
