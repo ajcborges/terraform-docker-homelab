@@ -87,11 +87,6 @@ jobs:
       - name: 📦 Terraform  Plan
         run: |
           terraform plan -out="terraform.tfplan"
-
-      - name: Auto approval
-        uses: hmarr/auto-approve-action@v3.0.0
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
           
           
   
