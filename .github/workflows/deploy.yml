@@ -27,7 +27,7 @@ jobs:
             exit 0
           fi
           git fetch origin "$BASE_REF" --depth=1
-          dirs=$(git diff --name-only origin/${{ github.base_ref }} ${{ github.sha }} | grep '^containers/' | awk -F/ '{print $1"/"$2}' | sort -u | jq -R -s -c 'split("\n")[:-1]')
+          dirs=$(git diff --name-only $BASE_REF ${{ github.sha }} | grep '^containers/' | awk -F/ '{print $1"/"$2}' | sort -u | jq -R -s -c 'split("\n")[:-1]')
           echo "Changed directories: $dirs"
 
           if [[ "$dirs" == "[]" || -z "$dirs" ]]; then
@@ -97,12 +97,6 @@ jobs:
           name: terraform-plan-${{ matrix.dir }}
           path: terraform.tfplan
 
-      - name: Check for terraform.tfplan
-        run: |
-          if [ ! -f terraform.tfplan ]; then
-            echo "No plan file found, skipping apply."
-            exit 0
-          fi
           
   apply:
       needs: [ detect-changes, plan ]
@@ -116,6 +110,19 @@ jobs:
         run:
           working-directory: ${{ matrix.dir }}
       steps:
+
+        - name: Manual approval
+          uses: hmarr/auto-approve-action@v3.0.0
+          with:
+            github-token: ${{ secrets.GITHUB_TOKEN }}
+            
+        - name: Check for terraform.tfplan
+          run: |
+            if [ ! -f terraform.tfplan ]; then
+              echo "No plan file found, skipping apply."
+              exit 0
+            fi
+            
         - name: 🧾 Checkout Repo
           uses: actions/checkout@v4
 
@@ -144,4 +151,7 @@ jobs:
   
         - name: 🚀 Terraform Apply
           run: terraform  apply terraform.tfplan -auto-approve
+
+        - name: Show Terraform Apply Summary
+          run: terraform show -no-color
  
