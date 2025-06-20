@@ -23,7 +23,7 @@ module "container" {
     FILEBROWSER_AUTH_DEFAULT_PERMISSIONS_SOCKET = "rwxr-xr-x"
   }
   ports = [{
-    external = "8007"
+    external = "8009"
     internal = "80"
     protocol = "tcp"
   }]
