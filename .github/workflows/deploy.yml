@@ -92,7 +92,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: terraform-plan-${{ matrix.dir }}
-          path: terraform.tfplan
+          path: ${{ matrix.dir }}/terraform.tfplan
 
           
   apply:
@@ -144,7 +144,7 @@ jobs:
         - uses: actions/download-artifact@v4
           with:
             name: terraform-plan-${{ matrix.dir }}
-            path: .
+            path: ${{ matrix.dir }}
   
         - name: 🚀 Terraform Apply
           run: terraform  apply terraform.tfplan -auto-approve
