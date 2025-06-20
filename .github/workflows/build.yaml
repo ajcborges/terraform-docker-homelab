@@ -10,17 +10,7 @@ on:
   workflow_dispatch:
 
 jobs:
-
-  labelWhenPRCreation:
-      name: Label when PR Creation
-      runs-on: ubuntu-latest
-      steps:
-      - name:  Label Pull Request
-        uses: goldsrc/add-labels@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN_GITHUB }}
-          ADD_LABEL: "build"
-        
+  # This job detects changes in the 'containers' directory and sets the changed directories as output.      
   detect-changes:
     runs-on: ubuntu-latest
     outputs:
