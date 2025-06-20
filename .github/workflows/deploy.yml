@@ -20,7 +20,13 @@ jobs:
       - name: Get changed directories
         id: set-dirs
         run: |
-          git fetch origin ${{ github.base_ref }} --depth=1
+          BASE_REF="${{ github.base_ref }}"
+          if [ -z "$BASE_REF" ]; then
+            echo "BASE_REF not found. Skipping diff detection."
+            echo 'changed_dirs=[]' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git fetch origin "$BASE_REF" --depth=1
           dirs=$(git diff --name-only origin/${{ github.base_ref }} ${{ github.sha }} | grep '^containers/' | awk -F/ '{print $1"/"$2}' | sort -u | jq -R -s -c 'split("\n")[:-1]')
           echo "Changed directories: $dirs"
 
@@ -30,6 +36,15 @@ jobs:
           else
             echo "changed_dirs=$dirs" >> "$GITHUB_OUTPUT"
           fi
+          
+  debug-output:
+    needs: detect-changes
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show Changed Directories
+        run: |
+          echo "Terraform directories changed:"
+          echo "${{ needs.detect-changes.outputs.dirs }}" | jq .
 
   plan:
     needs: detect-changes
@@ -64,6 +79,9 @@ jobs:
         with:
           terraform_version: "1.3.3"
 
+      - name: Run tfsec
+        uses: aquasecurity/tfsec-action@v1.0.0
+
       - name: 📦 Terraform Init
         run: |
           terraform fmt --recursive
@@ -72,7 +90,19 @@ jobs:
 
       - name: 📦 Terraform  Plan
         run: |
-          terraform plan 
+          terraform plan -out="terraform.tfplan"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: terraform-plan-${{ matrix.dir }}
+          path: terraform.tfplan
+
+      - name: Check for terraform.tfplan
+        run: |
+          if [ ! -f terraform.tfplan ]; then
+            echo "No plan file found, skipping apply."
+            exit 0
+          fi
           
   apply:
       needs: [ detect-changes, plan ]
@@ -106,17 +136,11 @@ jobs:
           uses: hashicorp/setup-terraform@v3
           with:
             terraform_version: "1.3.3"
-  
-        - name: 📦 Terraform Init
-          run: |
-            terraform fmt --recursive
-            terraform init
-            terraform validate
 
-        - uses: actions/download-artifacts@v4
+        - uses: actions/download-artifact@v4
           with:
-            name: Terraform Plan get
-            path: public/
+            name: terraform-plan-${{ matrix.dir }}
+            path: .
   
         - name: 🚀 Terraform Apply
           run: terraform  apply terraform.tfplan -auto-approve
