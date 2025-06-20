@@ -20,14 +20,8 @@ jobs:
       - name: Get changed directories
         id: set-dirs
         run: |
-          BASE_REF="${{ github.base_ref }}"
-          if [ -z "$BASE_REF" ]; then
-            echo "BASE_REF not found. Skipping diff detection."
-            echo 'changed_dirs=[]' >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          git fetch origin "$BASE_REF" --depth=1
-          dirs=$(git diff --name-only $BASE_REF ${{ github.sha }} | grep '^containers/' | awk -F/ '{print $1"/"$2}' | sort -u | jq -R -s -c 'split("\n")[:-1]')
+          git fetch origin ${{ github.base_ref }} --depth=1
+          dirs=$(git diff --name-only origin/${{ github.base_ref }} ${{ github.sha }} | grep '^containers/' | awk -F/ '{print $1"/"$2}' | sort -u | jq -R -s -c 'split("\n")[:-1]')
           echo "Changed directories: $dirs"
 
           if [[ "$dirs" == "[]" || -z "$dirs" ]]; then
