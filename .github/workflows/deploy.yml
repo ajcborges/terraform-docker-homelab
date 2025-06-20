@@ -100,7 +100,9 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: terraform-plan-${{ steps.artifact_name.outputs.artifact_name }}
-          path: ${{ matrix.dir }}/terraform.tfplan
+          path: |
+            ${{ matrix.dir }}/terraform.tfplan
+            ${{ matrix.dir }}/.terraform.lock.hcl
 
           
   apply:
