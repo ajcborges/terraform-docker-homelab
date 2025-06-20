@@ -89,9 +89,17 @@ jobs:
         run: |
           terraform plan -out="terraform.tfplan"
 
+      - name: Set artifact name safe
+        id: artifact_name
+        run: |
+          safe_name="${DIR//\//-}"
+          echo "artifact_name=$safe_name" >> $GITHUB_OUTPUT
+        env:
+          DIR: ${{ matrix.dir }}
+
       - uses: actions/upload-artifact@v4
         with:
-          name: terraform-plan-${{ matrix.dir//\//- }}
+          name: terraform-plan-${{ steps.artifact_name.outputs.artifact_name }}
           path: ${{ matrix.dir }}/terraform.tfplan
 
           
@@ -141,9 +149,17 @@ jobs:
           with:
             terraform_version: "1.3.3"
 
+        - name: Set artifact name safe
+          id: artifact_name
+          run: |
+            safe_name="${DIR//\//-}"
+            echo "artifact_name=$safe_name" >> $GITHUB_OUTPUT
+          env:
+            DIR: ${{ matrix.dir }}
+        
         - uses: actions/download-artifact@v4
           with:
-            name: terraform-plan-${{ matrix.dir//\//- }}
+            name: terraform-plan-${{ steps.artifact_name.outputs.artifact_name }}
             path: ${{ matrix.dir }}
   
         - name: 🚀 Terraform Apply
