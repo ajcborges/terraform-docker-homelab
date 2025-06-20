@@ -113,10 +113,11 @@ jobs:
             terraform init
             terraform validate
 
-        - name: 📦 Terraform  Plan
-          run: |
-            terraform plan 
+        - uses: actions/download-artifacts@v4
+          with:
+            name: Terraform Plan get
+            path: public/
   
         - name: 🚀 Terraform Apply
-          run: terraform  apply -auto-approve
+          run: terraform  apply terraform.tfplan -auto-approve
  
