@@ -116,13 +116,6 @@ jobs:
           working-directory: ${{ matrix.dir }}
       steps:
             
-        - name: Check for terraform.tfplan
-          run: |
-            if [ ! -f terraform.tfplan ]; then
-              echo "No plan file found, skipping apply."
-              exit 0
-            fi
-            
         - name: 🧾 Checkout Repo
           uses: actions/checkout@v4
 
