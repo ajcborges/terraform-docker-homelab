@@ -139,9 +139,6 @@ jobs:
           with:
             terraform_version: "1.3.3"
 
-        - name: List downloaded artifact files
-          run: ls -Rlh ${{ matrix.dir }}
-
         - name: Set artifact name safe
           id: artifact_name
           run: |
