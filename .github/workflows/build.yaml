@@ -90,6 +90,9 @@ jobs:
       #     restore-keys: |
       #       terraform-${{ runner.os }}-
 
+      - name: Run tfsec
+        uses: aquasecurity/tfsec-action@v1.0.0
+
       - name: 📦 Terraform Init
         run: |
           terraform fmt --recursive
@@ -98,7 +101,7 @@ jobs:
 
       - name: 📦 Terraform  Plan
         run: |
-          terraform plan -out terraform.tfplan
+          terraform plan -out="terraform.tfplan"
       - uses: actions/upload-artifacts@v4
         with:
           name: terraform-plan-${{ matrix.dir }}
