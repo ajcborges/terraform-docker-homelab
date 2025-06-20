@@ -153,7 +153,7 @@ jobs:
             path: ${{ matrix.dir }}
   
         - name: 🚀 Terraform Apply
-          run: terraform apply -auto-approve terraform.tfplan
+          run: terraform apply -lockfile=ignore -auto-approve terraform.tfplan
 
         - name: Show Terraform Apply Summary
           run: terraform show -no-color
