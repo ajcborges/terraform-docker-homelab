@@ -22,6 +22,7 @@ module "container" {
     FILEBROWSER_AUTH_DEFAULT_PERMISSIONS_FILE    = "rw-r--r--"
     FILEBROWSER_AUTH_DEFAULT_PERMISSIONS_SYMLINK = "rwxr-xr-x"
     FILEBROWSER_AUTH_DEFAULT_PERMISSIONS_SOCKET  = "rwxr-xr-x"
+    
   }
   ports = [{
     external = "8080"
@@ -33,6 +34,10 @@ module "container" {
   host_paths = {
     "/mnt/usb2tb/containers/filebrowser/data" = {
       container_path = "/data/"
+      read_only      = false
+    },
+    "/mnt/usb2tb/containers/filebrowser/config" = {
+      container_path = "/config/"
       read_only      = false
     },
     "/mnt/usb2tb/" = {
