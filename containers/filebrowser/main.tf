@@ -2,7 +2,7 @@ module "container" {
   source = "git::https://github.com/ajcborges/terraform-modules.git//container?ref=container/2.0.0"
 
   image          = "filebrowser/filebrowser:latest"
-  container_name = "filebrowser2"
+  container_name = "FileBrowser"
   hostname       = "filebrowser"
   restart_policy = "unless-stopped"
   environment = {
@@ -23,7 +23,7 @@ module "container" {
     FILEBROWSER_AUTH_DEFAULT_PERMISSIONS_SOCKET  = "rwxr-xr-x"
   }
   ports = [{
-    external = "8005"
+    external = "8080"
     internal = "80"
     protocol = "tcp"
   }]
