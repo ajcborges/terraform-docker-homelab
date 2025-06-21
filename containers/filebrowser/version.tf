@@ -8,13 +8,13 @@ terraform {
   required_providers {
     docker = {
       source  = "kreuzwerker/docker"
-      version = "~> 3.4.0"  # Allow patch updates like 3.4.x
+      version = "~> 3.6.2" # Allow patch updates like 3.6.x
     }
   }
 
   backend "gcs" {
-    bucket  = "tf-homelab-backend"
-    prefix  = "containers/filebrowser/tfstate"
+    bucket = "tf-homelab-backend"
+    prefix = "containers/filebrowser/tfstate"
   }
 }
 
