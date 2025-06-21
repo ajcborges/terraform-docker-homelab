@@ -25,7 +25,7 @@ module "container" {
     
   }
   ports = [{
-    external = "8080"
+    external = "8081"
     internal = "80"
     protocol = "tcp"
   }]
