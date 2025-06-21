@@ -21,7 +21,8 @@ jobs:
       - name: Get changed directories
         id: set-dirs
         run: |
-          git fetch --depth=2  # fetch enough history to compare
+          # git fetch --depth=2  # fetch enough history to compare
+          git fetch --unshallow
           base_ref=${{ github.event.before }}
           echo "Base ref (before): $base_ref"
           
