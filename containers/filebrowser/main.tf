@@ -11,7 +11,6 @@ module "container" {
     GUID                                         = "1000"
     TZ                                           = "Australia/Melbourne"
     FILEBROWSER_BASEURL                          = "/"
-    FILEBROWSER_DATABASE                         = "/data/filebrowser.db"
     FILEBROWSER_ROOT                             = "/mnt/usb2tb/containers/filebrowser/"
     FILEBROWSER_AUTH_METHOD                      = "password"
     FILEBROWSER_AUTH_USERNAME                    = "admin"
@@ -32,12 +31,12 @@ module "container" {
 
 
   host_paths = {
-    "/mnt/usb2tb/containers/filebrowser/data" = {
-      container_path = "/data/"
+    "/mnt/usb2tb/containers/filebrowser/database/filebrowser.db" = {
+      container_path = "/database/filebrowser.db"
       read_only      = false
     },
-    "/mnt/usb2tb/containers/filebrowser/config" = {
-      container_path = "/config/"
+    "/mnt/usb2tb/containers/filebrowser/config/settings.json" = {
+      container_path = "/config/settings.json"
       read_only      = false
     },
     "/mnt/usb2tb/" = {
