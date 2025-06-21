@@ -1,5 +1,5 @@
 module "container" {
-  source = "git::https://github.com/ajcborges/terraform-modules.git//container?ref=a77f551"
+  source = "git::https://github.com/ajcborges/terraform-modules.git//container?ref=container/2.0.0"
 
   image          = "filebrowser/filebrowser:latest"
   container_name = "filebrowser2"
