@@ -5,7 +5,6 @@ module "container" {
   container_name = "FileBrowser"
   hostname       = "filebrowser"
   restart_policy = "unless-stopped"
-  domain_name    = "cedeno.me"
   dns            = ["8.8.8.8"]
   environment = {
     PUID                                         = "1000"
