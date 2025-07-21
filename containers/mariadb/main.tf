@@ -1,0 +1,27 @@
+module "container" {
+  source = "git::https://github.com/ajcborges/terraform-modules.git//container?ref=ba73b21"
+
+  image          = "jc21/mariadb-aria:latest"
+  container_name = "mariadb"
+  hostname       = "mariabd"
+  restart_policy = "unless-stopped"
+  environment = {
+    PUID                 = "1000"
+    GUID                 = "1000"
+    TZ                   = "Australia/Melbourne"
+    MYSQL_ROOT_PASSWORD  = var.mysql-root-password
+    MYSQL_DATABASE       = var.mysql-database
+    MYSQL_USER           = var.mysql-user
+    MYSQL_PASSWORD       = var.mysql-password
+    MARIADB_AUTO_UPGRADE = "1"
+  }
+
+  host_paths = {
+    "/mnt/containers/mariadb/mysql/" = {
+      container_path = "/var/lib/mysql/"
+      read_only      = false
+    }
+
+  }
+}
+
