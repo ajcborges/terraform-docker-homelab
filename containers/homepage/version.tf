@@ -20,6 +20,6 @@ terraform {
 
 # Docker provider config
 provider "docker" {
-  host     = "ssh://ajcborges@whitewalker:22"
+  host     = "ssh://ajcborges@nightking:22"
   ssh_opts = ["-o", "StrictHostKeyChecking=no", "-o", "UserKnownHostsFile=/dev/null"]
 }

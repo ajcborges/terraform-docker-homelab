@@ -5,7 +5,7 @@
 [![Docker](https://img.shields.io/badge/Docker-%23121011.svg?style=flat&logo=docker&logoColor=white)](https://www.docker.com/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE)
 
-This repo manages the deployment of a `Homepage` container using **Terraform** and a remote backend state file. It's designed to keep your container infra code clean, modular, and easy to use.
+This repo manages the deployment of a `Homepage` container using **Terraform** and a remote backend state file. It's designed to keep your container infra code clean, modular, and easy to use....
 
 ---
 
