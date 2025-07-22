@@ -9,10 +9,10 @@ module "container" {
     PUID                 = "1000"
     GUID                 = "1000"
     TZ                   = "Australia/Melbourne"
-    MYSQL_ROOT_PASSWORD  = var.mysql_root_password
-    MYSQL_DATABASE       = var.mysql_database
-    MYSQL_USER           = var.mysql_user
-    MYSQL_PASSWORD       = var.mysql_password
+    MYSQL_ROOT_PASSWORD  = "npm"
+    MYSQL_DATABASE       = "npm"
+    MYSQL_USER           = "npm"
+    MYSQL_PASSWORD       = "npm"
     MARIADB_AUTO_UPGRADE = "1"
   }
 
