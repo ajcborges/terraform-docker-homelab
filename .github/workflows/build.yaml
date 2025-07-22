@@ -68,6 +68,7 @@ jobs:
         run: |
           ssh -o "StrictHostKeyChecking no" ajcborges@nightking "
             ls -lsa
+          "
           
       - name: 🔑 Authenticate to GCP
         id: auth
