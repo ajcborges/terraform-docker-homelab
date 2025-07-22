@@ -64,6 +64,10 @@ jobs:
           oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
           tags: tag:github-ci
           
+      - name: Test SSH Connection
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ./ssh_key_file ajcborges@nightking -- "echo SSH Successful"
+          
       - name: 🔑 Authenticate to GCP
         id: auth
         uses: google-github-actions/auth@v2
