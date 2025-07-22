@@ -3,16 +3,16 @@ module "container" {
 
   image          = "jc21/mariadb-aria:latest"
   container_name = "mariadb"
-  hostname       = "mariabd"
+  hostname       = "mariadb"
   restart_policy = "unless-stopped"
   environment = {
     PUID                 = "1000"
     GUID                 = "1000"
     TZ                   = "Australia/Melbourne"
-    MYSQL_ROOT_PASSWORD  = var.mysql-root-password
-    MYSQL_DATABASE       = var.mysql-database
-    MYSQL_USER           = var.mysql-user
-    MYSQL_PASSWORD       = var.mysql-password
+    MYSQL_ROOT_PASSWORD  = var.mysql_root_password
+    MYSQL_DATABASE       = var.mysql_database
+    MYSQL_USER           = var.mysql_user
+    MYSQL_PASSWORD       = var.mysql_password
     MARIADB_AUTO_UPGRADE = "1"
   }
 

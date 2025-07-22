@@ -171,18 +171,18 @@ EOD
   default     = []
 }
 
-variable "mysql-root-password" {
+variable "mysql_root_password" {
   type = string
 }
 
-variable "mysql-database" {
+variable "mysql_database" {
   type = string
 }
 
-variable "mysql-user" {
+variable "mysql_user" {
   type = string
 }
 
-variable "mysql-password" {
+variable "mysql_password" {
   type = string
 }
