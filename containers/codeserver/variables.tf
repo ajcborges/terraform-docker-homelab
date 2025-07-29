@@ -170,15 +170,3 @@ EOD
   type        = any
   default     = []
 }
-
-variable "password" {
-  description = "The container user password"
-  type        = string
-  sensitive   = true
-}
-
-variable "sudo_password" {
-  description = "The container sudo password"
-  type        = string
-  sensitive   = true
-}
