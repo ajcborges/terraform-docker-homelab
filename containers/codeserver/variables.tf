@@ -172,18 +172,13 @@ EOD
 }
 
 variable "password" {
-  description = "Container user password"
+  description = "The container user password"
   type        = string
   sensitive   = true
 }
 
 variable "sudo_password" {
-  description = "Container sudo password"
+  description = "The container sudo password"
   type        = string
   sensitive   = true
-}
-
-variable "stage" {
-  description = "Deployment environment (e.g. dev, prod)"
-  type        = string
 }
