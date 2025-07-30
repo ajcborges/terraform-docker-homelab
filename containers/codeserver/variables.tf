@@ -170,3 +170,15 @@ EOD
   type        = any
   default     = []
 }
+
+variable "codeserver_password" {
+  description = "Password for code-server"
+  type        = string
+  default     = "PleaseChangeMe"
+}
+
+variable "codeserver_sudo_password" {
+  description = "Sudo password for code-server"
+  type        = string
+  default     = "PleaseChangeMe"
+}

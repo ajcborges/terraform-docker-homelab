@@ -9,8 +9,8 @@ module "container" {
   environment = {
     PUID              = "1000"
     PGID              = "1000"
-    PASSWORD          = "HelloWorld"
-    SUDO_PASSWORD     = "PleaseChangeMe"
+    PASSWORD          = var.codeserver_password
+    SUDO_PASSWORD     = var.codeserver_sudo_password
     DEFAULT_WORKSPACE = "/config/workspaces"
     TZ                = "Australia/Melbourne"
   }
