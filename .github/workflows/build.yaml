@@ -84,14 +84,15 @@ jobs:
         uses: aquasecurity/tfsec-action@v1.0.0
 
       - name: Load dynamic JSON secret
-        env:
-          CODESERVER_APP_ENV_JSON: ${{ secrets.CODESERVER_APP_ENV_JSON }}
+        # env:
+        #   CODESERVER_APP_ENV_JSON: ${{ secrets.CODESERVER_APP_ENV_JSON }}
         run: |
           CONTAINER_DIR=$(basename "${{ matrix.dir }}")
           SECRET_NAME="$(echo "$CONTAINER_DIR" | tr '[:lower:]' '[:upper:]')_APP_ENV_JSON"
           echo "Looking for secret: $SECRET_NAME"
       
           SECRET_VALUE="${!SECRET_NAME}"
+          echo "Looking for secret value: $SECRET_VALUE"
       
           if [[ -z "$SECRET_VALUE" ]]; then
             echo "Secret $SECRET_NAME not found or empty."
