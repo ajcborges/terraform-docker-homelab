@@ -99,8 +99,13 @@ jobs:
             exit 1
           fi
 
+          echo "$SECRET_VALUE" | jq empty
+          if [[ $? -ne 0 ]]; then
+            echo "Secret $SECRET_VALUE is not valid JSON"
+            exit 1
+          fi
+
           echo "$SECRET_VALUE" > app_env.json
-          echo "$SECRET_VALUE"
 
       - name: Parse JSON into TF variables
         id: parse-args
