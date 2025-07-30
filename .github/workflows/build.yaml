@@ -118,7 +118,7 @@ jobs:
 
             echo "::add-mask::$val"
             
-            VAR_ARGS="$VAR_ARGS -var=\"${tfkey}=${val}\""
+            VAR_ARGS="$VAR_ARGS -var=${tfkey}=${val}"
           done
       
           echo "TF_VARS=${VAR_ARGS}" >> $GITHUB_ENV
