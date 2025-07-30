@@ -90,14 +90,20 @@ jobs:
         run: |
           CONTAINER_DIR=$(basename "${{ matrix.dir }}")
           echo $CONTAINER_DIR
-          exit 1
-          # SECRET_NAME=$(echo "$CONTAINER_DIR" | tr '[:lower:]' '[:upper:]')_APP_ENV_JSON
-          # echo "Using secret name: $SECRET_NAME"
-          # if [[ -z "${{ secrets[SECRET_NAME] }}" ]]; then
-          #   echo "Secret $SECRET_NAME not found!"
-          #   exit 1
-          # fi
-          # echo "${{ secrets[SECRET_NAME] }}" > app_env.json
+
+      # - name: Load dynamic JSON secret
+      #   id: load-json
+      #   run: |
+      #     CONTAINER_DIR=$(basename "${{ matrix.dir }}")
+      #     echo $CONTAINER_DIR
+      #     exit 1
+      #     SECRET_NAME=$(echo "$CONTAINER_DIR" | tr '[:lower:]' '[:upper:]')_APP_ENV_JSON
+      #     echo "Using secret name: $SECRET_NAME"
+      #     if [[ -z "${{ secrets[SECRET_NAME] }}" ]]; then
+      #       echo "Secret $SECRET_NAME not found!"
+      #       exit 1
+      #     fi
+      #     echo "${{ secrets[SECRET_NAME] }}" > app_env.json
 
       # - name: Parse JSON into TF variables
       #   id: parse-args
