@@ -84,47 +84,26 @@ jobs:
         uses: aquasecurity/tfsec-action@v1.0.0
 
       - name: Load dynamic JSON secret
-        # env:
-        #   CODESERVER_APP_ENV_JSON: ${{ secrets.CODESERVER_APP_ENV_JSON }}
-        run: |
-          CONTAINER_DIR=$(basename "${{ matrix.dir }}")
-          SECRET_NAME="$(echo "$CONTAINER_DIR" | tr '[:lower:]' '[:upper:]')_APP_ENV_JSON"
-          echo "Looking for secret: $SECRET_NAME"
-      
-          SECRET_VALUE="${!SECRET_NAME}"
-          echo "Looking for secret value: $SECRET_VALUE"
-      
-          if [[ -z "$SECRET_VALUE" ]]; then
-            echo "Secret $SECRET_NAME not found or empty."
-            exit 1
-          fi
-      
-          echo "$SECRET_VALUE" | jq empty
-          echo "$SECRET_VALUE" > app_env.json
-          echo "successfull"
-          exit 1
-
-      - name: Load dynamic JSON secret
         id: load-json
+        env:
+          APP_ENV_JSON: ${{ secrets.CONTAINER_SECRETS }}
         run: |
-          CONTAINER_DIR=$(basename "${{ matrix.dir }}")
-          echo $CONTAINER_DIR
-          SECRET_NAME=$(echo "$CONTAINER_DIR" | tr '[:lower:]' '[:upper:]')_APP_ENV_JSON
-          echo "Using secret name: $SECRET_NAME"
-          # Use indirect expansion to access the right env var
-          SECRET_VALUE="secrets.${SECRET_NAME}"
-          if [[ -z "$SECRET_VALUE" ]]; then
-            echo "Secret $SECRET_VALUE not found or empty."
+          
+          if [[ -z "$APP_ENV_JSONE" ]]; then
+            echo "Secret $APP_ENV_JSON not found or empty."
             exit 1
           fi
 
-          echo "$SECRET_VALUE" | jq empty
+          echo "$APP_ENV_JSON" | jq empty
           if [[ $? -ne 0 ]]; then
-            echo "Secret $SECRET_VALUE is not valid JSON"
+            echo "Secret $APP_ENV_JSON is not valid JSON"
             exit 1
           fi
 
-          echo "$SECRET_VALUE" > app_env.json
+          echo "$APP_ENV_JSON" > app_env.json
+          echo "Secret $APP_ENV_JSON
+          echo "Successfull"
+          exit 1
 
       - name: Parse JSON into TF variables
         id: parse-args
