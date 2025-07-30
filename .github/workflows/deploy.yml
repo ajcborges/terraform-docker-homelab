@@ -80,6 +80,47 @@ jobs:
       - name: Run tfsec
         uses: aquasecurity/tfsec-action@v1.0.0
 
+      - name: Load dynamic JSON secret
+        id: load-json
+        env:
+          APP_ENV_JSON: ${{ secrets.CONTAINER_SECRETS }}
+        run: |
+          
+          if [[ -z "$APP_ENV_JSON" ]]; then
+            echo "Secret APP_ENV_JSON is not set or empty."
+            exit 1
+          fi
+      
+          echo "$APP_ENV_JSON" | jq empty
+          if [[ $? -ne 0 ]]; then
+            echo "Secret APP_ENV_JSON is not valid JSON"
+            exit 1
+          fi
+      
+          echo "$APP_ENV_JSON" > app_env.json
+          echo "Secret loaded and saved to app_env.json"
+
+      - name: Parse JSON into TF variables
+        id: parse-args
+        run: |
+          VAR_ARGS=""
+          if [ ! -s app_env.json ]; then
+            echo "app_env.json is empty or missing!"
+            exit 1
+          fi
+      
+          for key in $(jq -r 'keys[]' app_env.json); do
+            val=$(jq -r --arg k "$key" '.[$k]' app_env.json)
+            tfkey=$(echo "$key" | tr '[:upper:]' '[:lower:]')
+
+            echo "::add-mask::$val"
+            
+            VAR_ARGS="$VAR_ARGS -var=${tfkey}=${val}"
+          done
+      
+          echo "TF_VARS=${VAR_ARGS}" >> $GITHUB_ENV
+          echo "TF_VARS is set with masked values"
+
       - name: 📦 Terraform Init
         run: |
           terraform fmt --recursive
@@ -88,7 +129,7 @@ jobs:
 
       - name: 📦 Terraform  Plan
         run: |
-          terraform plan -out="terraform.tfplan"
+          terraform plan -out=terraform.tfplan $TF_VARS
 
       # - name: Set artifact name safe
       #   id: artifact_name
@@ -155,6 +196,47 @@ jobs:
 
         - name: Run tfsec
           uses: aquasecurity/tfsec-action@v1.0.0
+
+        - name: Load dynamic JSON secret
+          id: load-json
+          env:
+            APP_ENV_JSON: ${{ secrets.CONTAINER_SECRETS }}
+          run: |
+            
+            if [[ -z "$APP_ENV_JSON" ]]; then
+              echo "Secret APP_ENV_JSON is not set or empty."
+              exit 1
+            fi
+        
+            echo "$APP_ENV_JSON" | jq empty
+            if [[ $? -ne 0 ]]; then
+              echo "Secret APP_ENV_JSON is not valid JSON"
+              exit 1
+            fi
+        
+            echo "$APP_ENV_JSON" > app_env.json
+            echo "Secret loaded and saved to app_env.json"
+  
+        - name: Parse JSON into TF variables
+          id: parse-args
+          run: |
+            VAR_ARGS=""
+            if [ ! -s app_env.json ]; then
+              echo "app_env.json is empty or missing!"
+              exit 1
+            fi
+        
+            for key in $(jq -r 'keys[]' app_env.json); do
+              val=$(jq -r --arg k "$key" '.[$k]' app_env.json)
+              tfkey=$(echo "$key" | tr '[:upper:]' '[:lower:]')
+  
+              echo "::add-mask::$val"
+              
+              VAR_ARGS="$VAR_ARGS -var=${tfkey}=${val}"
+            done
+        
+            echo "TF_VARS=${VAR_ARGS}" >> $GITHUB_ENV
+            echo "TF_VARS is set with masked values"
   
         - name: 📦 Terraform Init
           run: |
@@ -164,7 +246,7 @@ jobs:
 
         - name: 📦 Terraform  Plan
           run: |
-            terraform plan -out="terraform.tfplan"
+            terraform plan -out=terraform.tfplan $TF_VARS
   
         - name: 🚀 Terraform Apply
           run: terraform apply -auto-approve terraform.tfplan
