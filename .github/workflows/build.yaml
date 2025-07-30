@@ -102,8 +102,6 @@ jobs:
       
           echo "$APP_ENV_JSON" > app_env.json
           echo "Secret loaded and saved to app_env.json"
-          echo "Successful"
-          exit 1
 
       - name: Parse JSON into TF variables
         id: parse-args
