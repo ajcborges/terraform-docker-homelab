@@ -89,20 +89,20 @@ jobs:
           APP_ENV_JSON: ${{ secrets.CONTAINER_SECRETS }}
         run: |
           
-          if [[ -z "$APP_ENV_JSONE" ]]; then
-            echo "Secret $APP_ENV_JSON not found or empty."
+          if [[ -z "$APP_ENV_JSON" ]]; then
+            echo "Secret APP_ENV_JSON is not set or empty."
             exit 1
           fi
-
+      
           echo "$APP_ENV_JSON" | jq empty
           if [[ $? -ne 0 ]]; then
-            echo "Secret $APP_ENV_JSON is not valid JSON"
+            echo "Secret APP_ENV_JSON is not valid JSON"
             exit 1
           fi
-
+      
           echo "$APP_ENV_JSON" > app_env.json
-          echo "Secret $APP_ENV_JSON
-          echo "Successfull"
+          echo "Secret loaded and saved to app_env.json"
+          echo "Successful"
           exit 1
 
       - name: Parse JSON into TF variables
@@ -113,12 +113,13 @@ jobs:
             echo "app_env.json is empty or missing!"
             exit 1
           fi
-          
+      
           for key in $(jq -r 'keys[]' app_env.json); do
             val=$(jq -r --arg k "$key" '.[$k]' app_env.json)
             tfkey=$(echo "$key" | tr '[:upper:]' '[:lower:]')
             VAR_ARGS="$VAR_ARGS -var=\"${tfkey}=${val}\""
           done
+      
           echo "TF_VARS=${VAR_ARGS}" >> $GITHUB_ENV
           echo "TF_VARS=${VAR_ARGS}"
           exit 1
