@@ -111,6 +111,11 @@ jobs:
         id: parse-args
         run: |
           VAR_ARGS=""
+          if [ ! -s app_env.json ]; then
+            echo "app_env.json is empty or missing!"
+            exit 1
+          fi
+          
           for key in $(jq -r 'keys[]' app_env.json); do
             val=$(jq -r --arg k "$key" '.[$k]' app_env.json)
             tfkey=$(echo "$key" | tr '[:upper:]' '[:lower:]')
