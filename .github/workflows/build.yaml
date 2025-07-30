@@ -40,6 +40,7 @@ jobs:
       - run: |
           echo "Raw changed_dirs value:"
           echo "${{ needs.detect-changes.outputs.dirs }}"
+      
 
 
   plan:
@@ -84,6 +85,30 @@ jobs:
       - name: Run tfsec
         uses: aquasecurity/tfsec-action@v1.0.0
 
+      - name: Load dynamic JSON secret
+        id: load-json
+        run: |
+          CONTAINER_DIR=$(basename "${{ matrix.dir }}")
+          SECRET_NAME=$(echo "$CONTAINER_DIR" | tr '[:lower:]' '[:upper:]')_ENV_JSON
+          echo "Using secret name: $SECRET_NAME"
+          if [[ -z "${{ secrets[SECRET_NAME] }}" ]]; then
+            echo "Secret $SECRET_NAME not found!"
+            exit 1
+          fi
+          echo "${{ secrets[SECRET_NAME] }}" > app_env.json
+
+      - name: Parse JSON into TF variables
+        id: parse-args
+        run: |
+          VAR_ARGS=""
+          for key in $(jq -r 'keys[]' app_env.json); do
+            val=$(jq -r --arg k "$key" '.[$k]' app_env.json)
+            tfkey=$(echo "$key" | tr '[:upper:]' '[:lower:]')
+            VAR_ARGS="$VAR_ARGS -var=\"${tfkey}=${val}\""
+          done
+          echo "TF_VARS=${VAR_ARGS}" >> $GITHUB_ENV
+
+
       - name: 📦 Terraform Init
         run: |
           terraform fmt --recursive
@@ -92,7 +117,7 @@ jobs:
 
       - name: 📦 Terraform  Plan
         run: |
-          terraform plan -out="terraform.tfplan"
+          terraform plan -out=terraform.tfplan $TF_VARS
           
           
   
