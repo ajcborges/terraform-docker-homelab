@@ -40,6 +40,25 @@ jobs:
       - run: |
           echo "Raw changed_dirs value:"
           echo "${{ needs.detect-changes.outputs.dirs }}"
+      - name: Load dynamic JSON secret
+        env:
+          CODESERVER_APP_ENV_JSON: ${{ secrets.CODESERVER_APP_ENV_JSON }}
+        run: |
+          CONTAINER_DIR=$(basename "${{ matrix.dir }}")
+          SECRET_NAME="$(echo "$CONTAINER_DIR" | tr '[:lower:]' '[:upper:]')_APP_ENV_JSON"
+          echo "Looking for secret: $SECRET_NAME"
+      
+          SECRET_VALUE="${!SECRET_NAME}"
+      
+          if [[ -z "$SECRET_VALUE" ]]; then
+            echo "Secret $SECRET_NAME not found or empty."
+            exit 1
+          fi
+      
+          echo "$SECRET_VALUE" | jq empty
+          echo "$SECRET_VALUE" > app_env.json
+          exit 1
+
       
 
 
