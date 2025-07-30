@@ -90,6 +90,8 @@ jobs:
         run: |
           CONTAINER_DIR=$(basename "${{ matrix.dir }}")
           echo $CONTAINER_DIR
+          SECRET_NAME=$(echo "$CONTAINER_DIR" | tr '[:lower:]' '[:upper:]')_APP_ENV_JSON
+          echo "Using secret name: $SECRET_NAME"
 
       # - name: Load dynamic JSON secret
       #   id: load-json
