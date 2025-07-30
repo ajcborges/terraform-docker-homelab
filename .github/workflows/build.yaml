@@ -93,9 +93,9 @@ jobs:
           SECRET_NAME=$(echo "$CONTAINER_DIR" | tr '[:lower:]' '[:upper:]')_APP_ENV_JSON
           echo "Using secret name: $SECRET_NAME"
           # Use indirect expansion to access the right env var
-          SECRET_VALUE="${!SECRET_NAME}"
+          SECRET_VALUE="secrets.${SECRET_NAME}"
           if [[ -z "$SECRET_VALUE" ]]; then
-            echo "Secret $SECRET_NAME not found or empty."
+            echo "Secret $SECRET_VALUE not found or empty."
             exit 1
           fi
 
