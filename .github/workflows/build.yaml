@@ -112,7 +112,8 @@ jobs:
             exit 1
           fi
       
-          PREFIX="${{ matrix.dir }}"
+          PREFIXS="${{ matrix.dir }}"
+          PREFIX="${PREFIXS#containers/}"
           echo "PREFIXS=${PREFIX}" 
           exit 1
 
