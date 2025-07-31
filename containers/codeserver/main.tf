@@ -4,7 +4,7 @@ module "container" {
   image          = "linuxserver/code-server:4.101.2"
   container_name = "codeserver"
   hostname       = "codeserver"
-  restart_policy = "always"
+  restart_policy = "unless-stopped"
   privileged     = false
   environment = {
     PUID              = "1000"
