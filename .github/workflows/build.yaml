@@ -115,7 +115,6 @@ jobs:
           PREFIXS="${{ matrix.dir }}"
           PREFIX="${PREFIXS#containers/}"
           echo "PREFIXS=${PREFIX}" 
-          exit 1
 
           for key in $(jq -r --arg prefix "$PREFIX" 'keys[] | select(startswith($prefix))' app_env.json); do
             val=$(jq -r --arg k "$key" '.[$k]' app_env.json)
