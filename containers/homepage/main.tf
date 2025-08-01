@@ -9,7 +9,7 @@ module "container" {
     PUID = "1000"
     GUID = "1000"
     TZ   = "Australia/Melbourne"
-    HOMEPAGE_ALLOWED_HOSTS = "nightking:3000"
+    HOMEPAGE_ALLOWED_HOSTS = var.homepage_allowed_hosts
   }
 
   # Ports configuration
