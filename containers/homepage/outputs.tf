@@ -68,6 +68,7 @@ output "healthcheck" {
 
 output "environment" {
   value = module.container.environment
+  sensitive = true
 }
 
 output "docker_networks" {

@@ -170,3 +170,14 @@ EOD
   type        = any
   default     = []
 }
+
+variable "homepage_allowed_hosts" {
+  description = "Specify a allowed hosts for the Homepage container"
+  type        = string
+  default     = "192.168.30.20:3000"
+  validation {
+    condition     = can(regex("^[a-zA-Z0-9.-]+:[0-9]+$", var.homepage_allowed_hosts))
+    error_message = "Homepage allowed hosts must be in the format 'hostname:port'."
+  }
+  sensitive = true
+}
