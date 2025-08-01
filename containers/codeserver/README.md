@@ -1,8 +1,8 @@
-# Deploying  Locally
+# ⚙️ Deploy in Local Environment
 
 This project uses Terraform and accepts variable values via an `*.auto.tfvars` file, which Terraform automatically loads. These instructions assume you're working locally after cloning the repository from GitHub.
 
-## Prerequisites
+## 📝 Prerequisites
 
 - [Terraform installed](https://developer.hashicorp.com/terraform/downloads) (compatible version specified in `required_version` in `versions.tf`)
 - Git
@@ -28,7 +28,7 @@ This project uses Terraform and accepts variable values via an `*.auto.tfvars` f
 
 ---------
 
-## Quickstart
+## 🚀 Quickstart
 
 ### 1. Clone the repository
 
@@ -42,12 +42,12 @@ Here is the **Folder Structure**:
 ```shell
 .
 ├── 📂 codeserver                   # root folder
-│   ├── 📂 README.md                # Readme file
-│   ├── 📂 main.tf                  # main tf file
-│   ├── 📂 container.auto.tfvars    # auto variables tf file
-│   ├── 📂 outputs.tf               # outputs tf file
-│   ├── 📂 variables.tf             # variables tf file
-│   └── 📂 version.tf               # version tf file
+│   ├── 📄 README.md                # Readme file
+│   ├── 📄 main.tf                  # main tf file
+│   ├── 📄 container.auto.tfvars    # auto variables tf file
+│   ├── 📄 outputs.tf               # outputs tf file
+│   ├── 📄 variables.tf             # variables tf file
+│   └── 📄 version.tf               # version tf file
 └── 📂 docs                         # Documentation 
 ```
 
@@ -62,7 +62,7 @@ codeserver_password         = "PleaseChangeMe"
 codeserver_sudo_password    = "PleaaseChangeMe"
 ```
 
-> Tip: Do not commit secrets. For sensitive values, prefer passing via environment variables or a separate non-committed *.tfvars and load it explicitly.
+> ⓘ **Tip:** Do not commit secrets. For sensitive values, prefer passing via environment variables or a separate non-committed `*.tfvars` and load it explicitly.
 
 ### 3. Secure your variable files
 
