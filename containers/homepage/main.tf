@@ -12,6 +12,10 @@ module "container" {
     HOMEPAGE_ALLOWED_HOSTS = "nightking:3000"
   }
 
+  # Ports configuration
+  # Note: Homepage uses port 3000 by default.
+  # Ensure that the external port does not conflict with other services.
+  
   ports = [{
     external = "3000"
     internal = "3000"
