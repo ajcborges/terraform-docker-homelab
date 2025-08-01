@@ -51,7 +51,7 @@ Here is the **Folder Structure**:
 └── 📂 docs                         # Documentation 
 ```
 
-### 2. Update `container.auto.tfvars` file
+### 2. Create a `container.auto.tfvars` file
 
 Terraform automatically loads any file ending in .auto.tfvars or named terraform.tfvars. Example: container.auto.tfvars
 
