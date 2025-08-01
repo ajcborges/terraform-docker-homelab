@@ -1,115 +1,94 @@
-# 🚀 homepage Deployment with Terraform
+# ⚙️ Deploy in Local Environment
 
+This project uses Terraform and accepts variable values via an `*.auto.tfvars` file, which Terraform automatically loads. These instructions assume you're working locally after cloning the repository from GitHub.
 
-[![Terraform](https://img.shields.io/badge/Terraform-v1.3%2B-623CE4?logo=terraform&logoColor=white)](https://www.terraform.io/)
-[![Docker](https://img.shields.io/badge/Docker-%23121011.svg?style=flat&logo=docker&logoColor=white)](https://www.docker.com/)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE)
+## 📝 Prerequisites
 
-This repo manages the deployment of a `Homepage` container using **Terraform** and a remote backend state file. It's designed to keep your container infra code clean, modular, and easy to use....
+- [Terraform installed](https://developer.hashicorp.com/terraform/downloads) (compatible version specified in `required_version` in `versions.tf`)
+- Git
+- Any provider CLI/authentication prerequisites (e.g., cloud CLI logged in if required by the provider)
 
----
+### Terraform
 
-## 🖼️ Architecture Overview.
+| Name | Version |
+| --- | --- |
+| terraform | \>= 1.3.3 |
 
-```plaintext
-   ┌─────────────┐
-   │ tfinit.sh   │
-   └─────┬───────┘
-         │
-         ▼
- ┌──────────────┐
- │ backend file │◄──────────────────────────┐
- └────┬─────────┘                           │
-      ▼                                     │
-┌──────────────┐     ┌────────────────┐     │
-│ terraform    │ ◄──►│ hoemapage.tf   │     │
-│ init/plan/...│     │ variables.tf   │     │
-└────┬─────────┘     │ tfvars file    │─────┘
-     ▼               └────────────────┘
- ┌──────────────┐
- │  Docker Host │◄── SSH (if remote)
- └──────────────┘
+### Providers
+
+| Name | Version |
+| --- | --- |
+| kreuzwerker/docker | ~> 3.6.2 |
+
+### Modules
+
+| Name | Source | Version |
+| --- | --- | --- |
+| container | git::[https://github.com/ajcborges/terraform-modules.git//container](https://github.com/ajcborges/terraform-modules.git//container) | container/2.0.0 |
+
+---------
+
+## 🚀 Quickstart
+
+### 1. Clone the repository
+
+```sh
+git clone https://github.com/ajcborges/terraform-docker-foundations-2.0.git
+cd terraform-docker-foundations-2.0
 ```
 
-## 📁 Project Structure
+Here is the **Folder Structure**:
 
-```bash
+```shell
 .
-├── homepage.tf         # Terraform resources to deploy homepage
-├── variables.tf         # Input variables
-├── outputs.tf           # Output values
-├── version.tf           # Required provider + Terraform version
-├── homepage.tfvars     # Variable values for homepage deployment
-├── homepage.backend    # Generated backend config (auto-created)
-├── tfinit.sh            # Bootstrap script for terraform init/plan/apply
+├── 📂 homepage                     # root folder
+│   ├── 📄 README.md                # Readme file
+│   ├── 📄 main.tf                  # main tf file
+│   ├── 📄 container.auto.tfvars    # auto variables tf file
+│   ├── 📄 outputs.tf               # outputs tf file
+│   ├── 📄 variables.tf             # variables tf file
+│   └── 📄 version.tf               # version tf file
+└── 📂 docs                         # Documentation 
 ```
 
-## ⚙️ Prerequisites
-- Terraform installed (v1.3+ recommended)
-- Docker (running locally or remote Docker host)
-- SSH access to the Docker host (if using remote provider)
-- Executable permissions on the script:
-``` bash
-chmod +x tfinit.sh
+### 2. Create a `container.auto.tfvars` file
+
+Terraform automatically loads any file ending in .auto.tfvars or named terraform.tfvars. Example: container.auto.tfvars
+
+```hcl
+# container.auto.tfvars
+docker_host                 = "ssh://youruser@yourhost:22"
 ```
 
-## 🧠 How It Works
-This setup:
+> ⓘ **Tip:** Do not commit secrets. For sensitive values, prefer passing via environment variables or a separate non-committed `*.tfvars` and load it explicitly.
 
-- Uses the Docker provider via SSH (you can configure it in homepage.tf)
-- Manages your backend state via a .backend file created by the script
-- Uses .tfvars for variable overrides
-- Provides an interactive menu to plan, apply, or destroy the infra
+### 3. Secure your variable files
 
-## 🚀 Usage
+Add to `.gitignore` so you don't accidentally commit local overrides or secrets:
 
-### Step 1: Run the Script
-
-``` bash
-./tfinit.sh homepage
-```
-This will:
-
-- Generate homepage.backend
-- Run terraform init with backend config
-- Ask what action you wanna do (plan/apply/destroy)
-
-### Step 2: Choose Your Action
-Use the interactive menu to plan/apply/destroy your homepage setup.
-
-## 📦 Example Variables (homepage.tfvars)
-
-``` hcl
-container_name = "homepage"
-image          = "homepage/homepage-ce"
-ports = {
-  "8000" = "8000"
-  "9443" = "9443"
-}
+```hcl
+# variable overrides and secrets
+*.auto.tfvars
+*.tfvars
 ```
 
-## ✅ Outputs
+### 4. Initialize Terraform
 
-Once applied, you’ll see outputs like:
-
-- container_id
-- port_mappings
-
-Defined in outputs.tf.
-
-## 🧹 Cleanup
-To destroy the stack:
-
-```
-./tfinit.sh homepage
-# Choose: destroy
+```sh
+terraform init
 ```
 
-## 💡 Tips
-- You can replicate this setup for other containers by copying the tfvars/backend logic
-- Make sure your Docker daemon is accessible over SSH if you're not running local
-- This is a great base for CI/CD pipelines or scaling up using Ansible/Terraform combo
+### 5. (Optional) Validate and Preview
 
-## 🧑‍💻 Author
-Built with ❤️ by a fellow DevOps 🤘
-Feel free to fork, adapt, and improve!
+```sh
+terraform validate
+terraform plan -out=tfplan
+```
+
+The plan step will automatically include values from any `*.auto.tfvars` file in the current directory.
+
+### 6. Apply
+
+```sh
+terraform apply "tfplan"
+```

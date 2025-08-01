@@ -11,15 +11,15 @@ module "container" {
     TZ   = "Australia/Melbourne"
     HOMEPAGE_ALLOWED_HOSTS = "nightking:3000"
   }
+
   ports = [{
     external = "3000"
     internal = "3000"
     protocol = "tcp"
   }]
 
-
   host_paths = {
-    "/mnt/usb2tb/containers/homepage/" = {
+    "/srv/share/containers/homepage/config/" = {
       container_path = "/app/config/"
       read_only      = false
     },
