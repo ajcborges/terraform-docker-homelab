@@ -174,7 +174,7 @@ EOD
 variable "nginxproxymanager_email" {
   description = "nginx proxy manager default email"
   type        = string
-  default     = "my@example.com"
+  default     = "admin@example.com"
 }
 
 variable "nginxproxymanager_password" {
