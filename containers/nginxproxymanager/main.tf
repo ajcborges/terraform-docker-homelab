@@ -36,8 +36,8 @@ module "container" {
       container_path = "/data"
       read_only      = false
     },
-    "/srv/share/containers/nginxproxymanager/letsencrypt" = {
-      container_path = "/letsencrypt"
+    "/srv/share/containers/nginxproxymanager/etc/letsencrypt" = {
+      container_path = "/etc/letsencrypt/"
       read_only      = false
     },
   }
