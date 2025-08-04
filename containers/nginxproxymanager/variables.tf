@@ -170,3 +170,15 @@ EOD
   type        = any
   default     = []
 }
+
+variable "nginxproxymanager_email" {
+  description = "nginx proxy manager default email"
+  type        = string
+  default     = "my@example.com"
+}
+
+variable "nginxproxymanager_password" {
+  description = "nginx proxy manager default password"
+  type        = string
+  default     = "PleaseChangeMe"
+}

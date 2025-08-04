@@ -67,7 +67,7 @@ output "healthcheck" {
 }
 
 output "environment" {
-  value = module.container.environment
+  value     = module.container.environment
   sensitive = true
 }
 

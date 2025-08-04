@@ -7,29 +7,32 @@ module "container" {
   restart_policy = "unless-stopped"
   privileged     = false
   environment = {
-    PUID              = "1000"
-    PGID              = "1000"
-    TZ                = "Australia/Melbourne"
+    PUID                   = "1000"
+    PGID                   = "1000"
+    TZ                     = "Australia/Melbourne"
+    INITIAL_ADMIN_EMAIL    = var.nginxproxymanager_email
+    INITIAL_ADMIN_PASSWORD = var.nginxproxymanager_password
+
   }
 
   ports = [{
     external = "80"
     internal = "80"
     protocol = "tcp"
-  },
-  {
-    external = "443"
-    internal = "443"
-    protocol = "tcp"
-  },
-  {
-    external = "81"
-    internal = "81"
-    protocol = "tcp"
-  }
+    },
+    {
+      external = "443"
+      internal = "443"
+      protocol = "tcp"
+    },
+    {
+      external = "81"
+      internal = "81"
+      protocol = "tcp"
+    }
   ]
 
-  
+
 
   host_paths = {
     "/srv/share/containers/nginxproxymanager/data" = {
