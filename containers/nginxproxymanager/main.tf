@@ -10,6 +10,7 @@ module "container" {
     PUID                   = "1000"
     PGID                   = "1000"
     TZ                     = "Australia/Melbourne"
+    DISABLE_IPV6          = "true"
   }
 
   ports = [{
