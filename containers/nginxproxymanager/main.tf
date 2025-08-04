@@ -10,9 +10,6 @@ module "container" {
     PUID                   = "1000"
     PGID                   = "1000"
     TZ                     = "Australia/Melbourne"
-    INITIAL_ADMIN_EMAIL    = var.nginxproxymanager_email
-    INITIAL_ADMIN_PASSWORD = var.nginxproxymanager_password
-
   }
 
   ports = [{
