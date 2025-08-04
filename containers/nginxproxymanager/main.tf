@@ -1,7 +1,7 @@
 module "container" {
   source = "git::https://github.com/ajcborges/terraform-modules.git//container?ref=container/2.0.0"
 
-  image          = "jc21/nginx-proxy-manager:latest"
+  image          = "jc21/nginx-proxy-manager:2.12.6"
   container_name = "nginxproxymanager"
   hostname       = "nginxproxymanager"
   restart_policy = "unless-stopped"
