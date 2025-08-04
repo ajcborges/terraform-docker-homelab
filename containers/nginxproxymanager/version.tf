@@ -14,7 +14,7 @@ terraform {
 
   backend "gcs" {
     bucket = "tf-homelab-backend"
-    prefix = "containers/2fauth/tfstate/production.tfstate"
+    prefix = "containers/nginxproxymanager/tfstate/production.tfstate"
   }
 }
 

@@ -181,4 +181,5 @@ variable "nginxproxymanager_password" {
   description = "nginx proxy manager default password"
   type        = string
   default     = "PleaseChangeMe"
+  sensitive = true
 }
