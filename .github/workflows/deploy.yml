@@ -251,13 +251,19 @@ jobs:
             terraform fmt --recursive
             terraform init
             terraform validate
-
-        - name: 📦 Terraform  Plan
+            
+        - name: 📦 Terraform Plan
+          # Run terraform plan with an output, and then convert that output to JSON for Terraform Compliance to use later
           run: |
-            terraform plan -out=terraform.tfplan $TF_VARS
-  
+            terraform plan -out=plan.out $TF_VARS
+            terraform show -json plan.out > plan.out.json
+
+        # - name: 🔐 Terraform Compliance
+        #   run: terraform-compliance -f compliance -p plan.out.json
+
         - name: 🚀 Terraform Apply
-          run: terraform apply -auto-approve terraform.tfplan
+          if: github.ref == 'ref/heads/main' && github.event_name == "push"
+          run: terraform apply -auto-approve -input=false terraform.tfplan
 
         - name: Show Terraform Apply Summary
           run: terraform show -no-color
