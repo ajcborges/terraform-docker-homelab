@@ -15,10 +15,12 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
     steps:
       - run: echo "Deploying to ${{ github.event.inputs.environment }} environment"
 
   notify:
+    needs: deploy
     runs-on: ubuntu-latest
     if: ${{ github.event.inputs.notify }}
     steps:
