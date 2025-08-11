@@ -22,6 +22,6 @@ jobs:
   notify:
     needs: deploy
     runs-on: ubuntu-latest
-    if: ${{ github.event.inputs.notify }}
+    if: ${{ github.event.inputs.notify == 'true' }}
     steps:
       - run: echo "Deployed to ${{ github.event.inputs.environment }}"
