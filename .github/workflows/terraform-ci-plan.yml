@@ -11,6 +11,8 @@ on:
 jobs:
   detect-terraform-directory:
     runs-on: ubuntu-latest
+    outputs:
+          changed_tf_dirs: ${{ steps.detect-tf-dirs.outputs.changed_tf_dirs }}
     steps:
       - name: Checkout code    
         uses: actions/checkout@v4
