@@ -6,10 +6,15 @@ on:
     paths-ignore:
       - '**/*.md'
       - '.github/workflows/**'
+  issue_comment:
+      types: [created]
   workflow_dispatch:
 
 jobs:
   detect-terraform-directory:
+    if: github.event.issue.pull_request &&
+            contains(github.event.comment.body, '/rerun-tf-plan') &&
+            github.event.comment.user.login == 'ajcborges'
     runs-on: ubuntu-latest
     outputs:
           changed_tf_dirs: ${{ steps.detect-tf-dirs.outputs.changed_tf_dirs }}
@@ -40,10 +45,20 @@ jobs:
     needs: detect-terraform-directory
     if: ${{ needs.detect-terraform-directory.outputs.changed_tf_dirs != '[]' }}
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ needs.detect-terraform-directory.outputs.changed_tf_dirs }}
     steps:
       - name: Checkout code    
         uses: actions/checkout@v4
-      
-      - name: Print changed Terraform directories
+        
+      - name: 🛠️ Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.3.3"
+          
+      - name: 📦 Terraform Init
         run: |
-          echo "Directories: ${{ needs.detect-terraform-directory.outputs.changed_tf_dirs }}"
+          terraform fmt --recursive
+
+          
