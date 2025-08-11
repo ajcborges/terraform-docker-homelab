@@ -33,3 +33,15 @@ jobs:
           else
             echo "changed_tf_dirs=$TF_DIRS" >> "$GITHUB_OUTPUT"
           fi
+          
+  terraform-plan:
+    needs: detect-terraform-directory
+    if: ${{ needs.detect-terraform-directory.outputs.changed_tf_dirs != '[]' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code    
+        uses: actions/checkout@v4
+      
+      - name: Print changed Terraform directories
+        run: |
+          echo "Directories: ${{ needs.detect-terraform-directory.outputs.changed_tf_dirs }}"
