@@ -14,24 +14,22 @@ jobs:
     steps:
       - name: Checkout code    
         uses: actions/checkout@v4
-        
-      - name: Find changed Terraform directories
-        id: find_tf_changes
+
+      - name: Detect changed Terraform directories
+        id: detect-tf-dirs
         run: |
-          CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})
+          git fetch origin ${{ github.base_ref }} --depth=1
       
-          TF_FILES=$(echo "$CHANGED_FILES" | grep '\.tf$' || true)
+          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }} ${{ github.sha }})
       
-          if [ -z "$TF_FILES" ]; then
-            echo "No Terraform files changed."
-            echo "dir=" >> $GITHUB_OUTPUT
+          TF_DIRS=$(echo "$CHANGED_FILES" | grep '\.tf$' | xargs -n1 dirname | sort -u | jq -R -s -c 'split("\n")[:-1]')
+      
+          echo "Changed Terraform directories: $TF_DIRS"
+      
+          if [[ "$TF_DIRS" == "[]" || -z "$TF_DIRS" ]]; then
+            echo "No Terraform directory changes detected."
+            echo 'changed_tf_dirs=[]' >> "$GITHUB_OUTPUT"
             exit 0
+          else
+            echo "changed_tf_dirs=$TF_DIRS" >> "$GITHUB_OUTPUT"
           fi
-      
-          TF_DIRS=$(echo "$TF_FILES" | xargs -n1 dirname | sort -u)
-      
-          TF_DIR=$(echo "$TF_DIRS" | head -n 1)
-      
-          echo "TF_DIR=$TF_DIR" >> $GITHUB_ENV
-          echo "dir=$TF_DIR" >> $GITHUB_OUTPUT
-          echo "Detected Terraform directory: $TF_DIR"
