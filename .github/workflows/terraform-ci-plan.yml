@@ -12,9 +12,7 @@ on:
 
 jobs:
   detect-terraform-directory:
-    if: github.event.issue.pull_request &&
-            contains(github.event.comment.body, '/rerun-tf-plan') &&
-            github.event.comment.user.login == 'ajcborges'
+    if: github.event.issue.pull_request && contains(github.event.comment.body, '/rerun-tf-plan') && github.event.comment.user.login == 'ajcborges'
     runs-on: ubuntu-latest
     outputs:
           changed_tf_dirs: ${{ steps.detect-tf-dirs.outputs.changed_tf_dirs }}
