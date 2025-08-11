@@ -18,10 +18,8 @@ jobs:
       - name: Find changed Terraform directories
         id: find_tf_changes
         run: |
-          # Get list of changed files between commits
           CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})
       
-          # Filter for .tf files
           TF_FILES=$(echo "$CHANGED_FILES" | grep '\.tf$' || true)
       
           if [ -z "$TF_FILES" ]; then
@@ -30,13 +28,10 @@ jobs:
             exit 0
           fi
       
-          # Extract unique directories
           TF_DIRS=$(echo "$TF_FILES" | xargs -n1 dirname | sort -u)
       
-          # Pick the first directory (or handle multiple if needed)
           TF_DIR=$(echo "$TF_DIRS" | head -n 1)
       
-          # Export to environment and output
           echo "TF_DIR=$TF_DIR" >> $GITHUB_ENV
           echo "dir=$TF_DIR" >> $GITHUB_OUTPUT
           echo "Detected Terraform directory: $TF_DIR"
