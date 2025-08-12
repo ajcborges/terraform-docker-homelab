@@ -2,11 +2,11 @@ name: Homelab Deploy
 run-name: "Deploy (CD) - ${{ github.ref_name }}"
 
 on:
-  push:
-    branches: [ main ]
-    paths-ignore:
-      - '**/*.md'
-      - '.github/workflows/**'
+  # push:
+  #   branches: [ main ]
+  #   paths-ignore:
+  #     - '**/*.md'
+  #     - '.github/workflows/**'
   workflow_dispatch:
 
 jobs:
