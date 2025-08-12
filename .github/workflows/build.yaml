@@ -2,11 +2,11 @@ name: Homelab Build
 run-name: "Build (CI) - ${{ github.ref_name }}"
 
 on:
-  # pull_request:
-  #   types: [opened, reopened, synchronize]  
-  #   paths-ignore:
-  #     - '**/*.md'
-  #     - '.github/workflows/**'
+  pull_request:
+    types: [opened, reopened, synchronize]  
+    paths-ignore:
+      - '**/*.md'
+      - '.github/workflows/**'
   workflow_dispatch:
 
 jobs:
