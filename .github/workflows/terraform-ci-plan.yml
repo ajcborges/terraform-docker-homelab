@@ -54,8 +54,8 @@ jobs:
             for dir in $(echo '${{ needs.detect-terraform-directory.outputs.changed_tf_dirs }}' | jq -r '.[]'); do
               echo "Processing directory: $dir"
               if [ -d "$dir" ] && [ "$(find "$dir" -name '*.tf' | wc -l)" -gt 0 ]; then
-                terraform init "$dir"
-                terraform plan "$dir"
+                terraform -chdir="$dir" init
+                terraform -chdir="$dir" plan
               else
                 echo "Skipping $dir — not a valid Terraform directory."
               fi
