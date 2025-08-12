@@ -43,6 +43,9 @@ jobs:
   network-and-cloud-auth:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code    
+        uses: actions/checkout@v4
+        
       - name: 🔐 Connect to Tailscale
         uses: tailscale/github-action@v3
         with:
