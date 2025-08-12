@@ -1,0 +1,6 @@
+on:
+  workflow_call:
+    inputs:
+      pr_id:
+        required: true
+        type: string
