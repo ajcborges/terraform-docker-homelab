@@ -7,6 +7,10 @@ on:
       - '**/*.md'
       - '.github/workflows/**'
   workflow_dispatch:
+    inputs:
+      pr_id:
+        description: 'Pull request ID'
+        required: true
 
 jobs:
   detect-terraform-directory:
@@ -34,12 +38,36 @@ jobs:
             exit 0
           else
             echo "changed_tf_dirs=$TF_DIRS" >> "$GITHUB_OUTPUT"
+            echo "${{ inputs.pr_id }}-tf-plan"
           fi
+  network-and-cloud-auth:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🔐 Connect to Tailscale
+        uses: tailscale/github-action@v3
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:github-ci
+  
+      - name: Test SSH Connection
+        run: |
+          ssh -o "StrictHostKeyChecking no" ajcborges@nightking "
+            ls -lsa
+          "
           
+      - name: 🔑 Authenticate to GCP
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+    
   terraform-plan:
     needs: detect-terraform-directory
     if: ${{ needs.detect-terraform-directory.outputs.changed_tf_dirs != '[]' }}
     runs-on: ubuntu-latest
+    outputs:
+          tf_plan: ${{ steps.tfplan.outputs.tf_plan }}
     steps:
       - name: Checkout code    
         uses: actions/checkout@v4
@@ -48,17 +76,103 @@ jobs:
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: "1.3.3"
+
+      - name: Run tfsec
+        uses: aquasecurity/tfsec-action@v1.0.0
+
+      - name: Load dynamic JSON secret
+        id: load-json
+        env:
+          APP_ENV_JSON: ${{ secrets.CONTAINER_SECRETS }}
+        run: |
+          
+          if [[ -z "$APP_ENV_JSON" ]]; then
+            echo "Secret APP_ENV_JSON is not set or empty."
+            exit 1
+          fi
+      
+          echo "$APP_ENV_JSON" | jq empty
+          if [[ $? -ne 0 ]]; then
+            echo "Secret APP_ENV_JSON is not valid JSON"
+            exit 1
+          fi
+      
+          echo "$APP_ENV_JSON" > app_env.json
+          echo "Secret loaded and saved to app_env.json"
+
+      - name: Parse JSON into TF variables
+        id: parse-args
+        run: |
+          VAR_ARGS=""
+          if [ ! -s app_env.json ]; then
+            echo "app_env.json is empty or missing!"
+            exit 1
+          fi
+      
+          PREFIXS="${{ needs.detect-terraform-directory.outputs.changed_tf_dirs }}"
+          PREFIX="${PREFIXS#containers/}"
+          echo "PREFIXS=${PREFIX}" 
+
+          for key in $(jq -r --arg prefix "$PREFIX" 'keys[] | select(startswith($prefix))' app_env.json); do
+            val=$(jq -r --arg k "$key" '.[$k]' app_env.json)
+            tfkey=$(echo "$key" | tr '[:upper:]' '[:lower:]')
+
+            echo "::add-mask::$val"
+            
+            VAR_ARGS="$VAR_ARGS -var=${tfkey}=${val}"
+          done
+      
+          echo "TF_VARS=${VAR_ARGS}" >> $GITHUB_ENV
+          echo "TF_VARS is set with masked values"
+          echo "TF_VARS=${VAR_ARGS}"
           
       - name: 📦 Terraform Init
+        id: tfinit
         run: |
             for dir in $(echo '${{ needs.detect-terraform-directory.outputs.changed_tf_dirs }}' | jq -r '.[]'); do
               echo "Processing directory: $dir"
               if [ -d "$dir" ] && [ "$(find "$dir" -name '*.tf' | wc -l)" -gt 0 ]; then
+                terraform -chdir="$dir" fmt --recursive
                 terraform -chdir="$dir" init
-                terraform -chdir="$dir" plan
+                terraform -chdir="$dir" plan -out=terraform.tfplan $TF_VARS
               else
                 echo "Skipping $dir — not a valid Terraform directory."
+                exit 0
               fi
             done
 
-          
+      - name: 📦 Terraform Plan
+        id: tfplan
+        run: |
+            for dir in $(echo '${{ needs.detect-terraform-directory.outputs.changed_tf_dirs }}' | jq -r '.[]'); do
+              echo "Processing directory: $dir"
+              if [ -d "$dir" ] && [ "$(find "$dir" -name '*.tf' | wc -l)" -gt 0 ]; then
+                terraform -chdir="$dir" plan -no-color -out=terraform.tfplan $TF_VARS >> $GITHUB_OUTPUT
+                echo 'EOF' >> $GITHUB_OUTPUT
+              else
+                echo "Skipping $dir — not a valid Terraform directory."
+                exit 0
+              fi
+            done
+        
+      - name: Save Artifact
+        id: save-artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ inputs.pr_id }}-tf-plan
+          path: $dir/tfplan
+
+      - name: Comment Plan
+        id: comment-plan
+        uses: peter-evans/create-or-update-comment@v2
+        with:
+          token: ${{ inputs.github_token }}
+          issue-number: ${{ inputs.pr_id }}
+          body: |
+            Terraform Plan:
+  
+            ```
+            ${{ needs.tfplan.outputs.tf_plan }}
+            ```
+  
+            Plan saved to GH artifacts.
