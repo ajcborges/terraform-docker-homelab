@@ -63,7 +63,14 @@ jobs:
         uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
-    
+          
+      - name: 🔑 Set GOOGLE_APPLICATION_CREDENTIALS
+        run: echo "${{ secrets.GCP_CREDENTIALS }}" > ${{ github.workspace }}/gcp-creds.json
+        shell: bash
+      
+      - name: 🔑 Export GOOGLE_APPLICATION_CREDENTIALS
+        run: echo "GOOGLE_APPLICATION_CREDENTIALS=${{ github.workspace }}/gcp-creds.json" >> $GITHUB_ENV
+
   terraform-plan:
     needs: [detect-terraform-directory, network-and-cloud-auth]
     if: ${{ needs.detect-terraform-directory.outputs.changed_tf_dirs != '[]' }}
