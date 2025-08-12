@@ -54,6 +54,7 @@ jobs:
             for dir in $(echo '${{ needs.detect-terraform-directory.outputs.changed_tf_dirs }}' | jq -r '.[]'); do
               echo "Running terraform fmt in $dir"
               terraform fmt --recursive "$dir"
+              terraform init
             done
 
           
