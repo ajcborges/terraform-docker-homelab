@@ -1,5 +1,6 @@
 name: Homelab CI/CD Workflow
 run-name: "Terraform Plan (CI) - ${{ github.ref_name }}" 
+
 on:
   pull_request:
     types: [opened, reopened, synchronize]  
@@ -13,6 +14,11 @@ on:
         required: true
 
 jobs:
+  call-reusable:
+      uses: ./.github/workflows/reusable-workflow.yml
+      with:
+        pr_id: ${{ github.event.pull_request.number }}
+
   detect-terraform-directory:
     runs-on: ubuntu-latest
     outputs:
@@ -25,21 +31,17 @@ jobs:
         id: detect-tf-dirs
         run: |
           git fetch origin ${{ github.base_ref }} --depth=1
-      
           CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }} ${{ github.sha }})
-      
           TF_DIRS=$(echo "$CHANGED_FILES" | grep '\.tf$' | xargs -n1 dirname | sort -u | jq -R -s -c 'split("\n")[:-1]')
-      
           echo "Changed Terraform directories: $TF_DIRS"
       
           if [[ "$TF_DIRS" == "[]" || -z "$TF_DIRS" ]]; then
             echo "No Terraform directory changes detected."
             echo 'changed_tf_dirs=[]' >> "$GITHUB_OUTPUT"
-            exit 0
           else
             echo "changed_tf_dirs=$TF_DIRS" >> "$GITHUB_OUTPUT"
-            echo "${{ inputs.pr_id }}-tf-plan"
           fi
+          
   network-and-cloud-auth:
     runs-on: ubuntu-latest
     steps:
@@ -55,18 +57,15 @@ jobs:
   
       - name: Test SSH Connection
         run: |
-          ssh -o "StrictHostKeyChecking no" ajcborges@nightking "
-            ls -lsa
-          "
+          ssh -o "StrictHostKeyChecking no" ajcborges@nightking "ls -lsa"
           
       - name: 🔑 Authenticate to GCP
-        id: auth
         uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
     
   terraform-plan:
-    needs: detect-terraform-directory
+    needs: [detect-terraform-directory, network-and-cloud-auth]
     if: ${{ needs.detect-terraform-directory.outputs.changed_tf_dirs != '[]' }}
     runs-on: ubuntu-latest
     outputs:
@@ -126,56 +125,46 @@ jobs:
           done
       
           echo "TF_VARS=${VAR_ARGS}" >> $GITHUB_ENV
-          echo "TF_VARS is set with masked values"
-          echo "TF_VARS=${VAR_ARGS}"
           
-      - name: 📦 Terraform Init
-        id: tfinit
+      - name: 📦 Terraform Init & Plan
+        id: tfplan
         run: |
+            PLAN_OUTPUT=""
             for dir in $(echo '${{ needs.detect-terraform-directory.outputs.changed_tf_dirs }}' | jq -r '.[]'); do
               echo "Processing directory: $dir"
               if [ -d "$dir" ] && [ "$(find "$dir" -name '*.tf' | wc -l)" -gt 0 ]; then
                 terraform -chdir="$dir" fmt --recursive
                 terraform -chdir="$dir" init
                 terraform -chdir="$dir" plan -out=terraform.tfplan $TF_VARS
+                PLAN=$(terraform -chdir="$dir" show -no-color terraform.tfplan)
+                echo "$PLAN" >> tfplan_output.txt
               else
                 echo "Skipping $dir — not a valid Terraform directory."
-                exit 0
               fi
             done
+            echo "tf_plan<<EOF" >> $GITHUB_OUTPUT
+            cat tfplan_output.txt >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
 
-      - name: 📦 Terraform Plan
-        id: tfplan
-        run: |
-            for dir in $(echo '${{ needs.detect-terraform-directory.outputs.changed_tf_dirs }}' | jq -r '.[]'); do
-              echo "Processing directory: $dir"
-              if [ -d "$dir" ] && [ "$(find "$dir" -name '*.tf' | wc -l)" -gt 0 ]; then
-                terraform -chdir="$dir" plan -no-color -out=terraform.tfplan $TF_VARS >> $GITHUB_OUTPUT
-                echo 'EOF' >> $GITHUB_OUTPUT
-              else
-                echo "Skipping $dir — not a valid Terraform directory."
-                exit 0
-              fi
-            done
-        
       - name: Save Artifact
         id: save-artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ inputs.pr_id }}-tf-plan
-          path: $dir/tfplan
+          name: terraform-plans
+          path: tfplan_output.txt
 
       - name: Comment Plan
         id: comment-plan
         uses: peter-evans/create-or-update-comment@v2
         with:
-          token: ${{ inputs.github_token }}
-          issue-number: ${{ inputs.pr_id }}
+          token: ${{ secrets.TOKEN_GITHUB }}
+          issue-number: ${{ github.event.pull_request.number }}
           body: |
             Terraform Plan:
-  
+
             ```
-            ${{ needs.tfplan.outputs.tf_plan }}
+            ${{ steps.tfplan.outputs.tf_plan }}
             ```
-  
-            Plan saved to GH artifacts.
+
+            Plan saved to GitHub Actions artifacts.
+
